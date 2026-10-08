@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AJADD HUB — Communication</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    background:#f5f6fa;
+    color:#1f2937;
+}
+
+header{
+    background:#111827;
+    color:white;
+    padding:22px;
+}
+
+header h1{
+    font-size:25px;
+}
+
+header p{
+    margin-top:6px;
+    color:#d1d5db;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+    padding:25px;
+}
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+    margin-bottom:25px;
+}
+
+.card{
+    background:white;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 3px 12px rgba(0,0,0,.08);
+}
+
+.card h3{
+    font-size:14px;
+    color:#6b7280;
+    margin-bottom:8px;
+}
+
+.card strong{
+    font-size:27px;
+}
+
+.actions{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:20px;
+}
+
+button{
+    border:none;
+    padding:11px 16px;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.btn-primary{
+    background:#111827;
+    color:white;
+}
+
+.btn-success{
+    background:#16a34a;
+    color:white;
+}
+
+.btn-danger{
+    background:#dc2626;
+    color:white;
+}
+
+.btn-secondary{
+    background:#e5e7eb;
+    color:#111827;
+}
+
+.filters{
+    display:flex;
+    gap:10px;
+    margin-bottom:20px;
+    flex-wrap:wrap;
+}
+
+.filters input{
+    flex:1;
+    min-width:230px;
+}
+
+input,select,textarea{
+    width:100%;
+    padding:12px;
+    border:1px solid #d1d5db;
+    border-radius:8px;
+    background:white;
+}
+
+textarea{
+    min-height:150px;
+    resize:vertical;
+}
+
+.table-container{
+    background:white;
+    border-radius:12px;
+    overflow:auto;
+    box-shadow:0 3px 12px rgba(0,0,0,.08);
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th,td{
+    padding:14px;
+    border-bottom:1px solid #eee;
+    text-align:left;
+}
+
+th{
+    background:#f9fafb;
+}
+
+.badge{
+    padding:5px 9px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:bold;
+}
+
+.badge-publie{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.badge-brouillon{
+    background:#fef3c7;
+    color:#92400e;
+}
+
+.badge-archive{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.55);
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+
+.modal-content{
+    width:100%;
+    max-width:600px;
+    max-height:90vh;
+    overflow:auto;
+    background:white;
+    border-radius:15px;
+    padding:25px;
+}
+
+.modal-content h2{
+    margin-bottom:20px;
+}
+
+.form-group{
+    margin-bottom:15px;
+}
+
+.form-group label{
+    display:block;
+    font-weight:bold;
+    margin-bottom:6px;
+}
+
+.modal-actions{
+    display:flex;
+    gap:10px;
+    margin-top:20px;
+}
+
+.message{
+    display:none;
+    padding:12px;
+    border-radius:8px;
+    margin-bottom:15px;
+}
+
+.success{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.error{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+@media(max-width:800px){
+    .stats{
+        grid-template-columns:repeat(2,1fr);
+    }
+}
+
+@media(max-width:500px){
+    .stats{
+        grid-template-columns:1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>AJADD HUB — Communication</h1>
+    <p>Gestion des communications, publications et annonces</p>
+</header>
+
+<div class="container">
+
+<div id="message" class="message"></div>
+
+<!-- STATISTIQUES -->
+
+<div class="stats">
+
+    <div class="card">
+        <h3>Total communications</h3>
+        <strong id="totalCommunications">0</strong>
+    </div>
+
+    <div class="card">
+        <h3>Publiées</h3>
+        <strong id="totalPubliees">0</strong>
+    </div>
+
+    <div class="card">
+        <h3>Brouillons</h3>
+        <strong id="totalBrouillons">0</strong>
+    </div>
+
+    <div class="card">
+        <h3>Archivées</h3>
+        <strong id="totalArchivees">0</strong>
+    </div>
+
+</div>
+
+
+<!-- ACTIONS -->
+
+<div class="actions">
+
+<button class="btn-primary" onclick="ouvrirModal()">
++ Nouvelle communication
+</button>
+
+<button class="btn-secondary" onclick="chargerCommunications()">
+Actualiser
+</button>
+
+</div>
+
+
+<!-- FILTRES -->
+
+<div class="filters">
+
+<input
+type="text"
+id="recherche"
+placeholder="Rechercher une communication..."
+oninput="afficherCommunications()"
+>
+
+<select
+id="filtreType"
+onchange="afficherCommunications()"
+>
+
+<option value="">
+Tous les types
+</option>
+
+<option value="Annonce">
+Annonce
+</option>
+
+<option value="Actualité">
+Actualité
+</option>
+
+<option value="Publicité">
+Publicité
+</option>
+
+<option value="Information">
+Information
+</option>
+
+</select>
+
+
+<select
+id="filtreStatut"
+onchange="afficherCommunications()"
+>
+
+<option value="">
+Tous les statuts
+</option>
+
+<option value="publie">
+Publié
+</option>
+
+<option value="brouillon">
+Brouillon
+</option>
+
+<option value="archive">
+Archivé
+</option>
+
+</select>
+
+</div>
+
+
+<!-- TABLE -->
+
+<div class="table-container">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Titre</th>
+<th>Type</th>
+<th>Auteur</th>
+<th>Date</th>
+<th>Statut</th>
+<th>Actions</th>
+
+</tr>
+
+</thead>
+
+<tbody id="communicationsTable">
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+
+<!-- MODAL -->
+
+<div class="modal" id="communicationModal">
+
+<div class="modal-content">
+
+<h2 id="modalTitle">
+Nouvelle communication
+</h2>
+
+
+<div class="form-group">
+
+<label>Titre</label>
+
+<input
+type="text"
+id="titre"
+placeholder="Titre de la communication"
+>
+
+</div>
+
+
+<div class="form-group">
+
+<label>Contenu</label>
+
+<textarea
+id="contenu"
+placeholder="Écrivez votre communication..."
+></textarea>
+
+</div>
+
+
+<div class="form-group">
+
+<label>Type</label>
+
+<select id="type">
+
+<option value="Annonce">
+Annonce
+</option>
+
+<option value="Actualité">
+Actualité
+</option>
+
+<option value="Publicité">
+Publicité
+</option>
+
+<option value="Information">
+Information
+</option>
+
+</select>
+
+</div>
+
+
+<div class="form-group">
+
+<label>Statut</label>
+
+<select id="statut">
+
+<option value="publie">
+Publié
+</option>
+
+<option value="brouillon">
+Brouillon
+</option>
+
+<option value="archive">
+Archivé
+</option>
+
+</select>
+
+</div>
+
+
+<div class="form-group">
+
+<label>Date de publication</label>
+
+<input
+type="date"
+id="datePublication"
+>
+
+</div>
+
+
+<div class="form-group">
+
+<label>Auteur</label>
+
+<input
+type="text"
+id="auteur"
+placeholder="Nom de l'auteur"
+>
+
+</div>
+
+
+<div class="modal-actions">
+
+<button
+class="btn-success"
+onclick="enregistrerCommunication()"
+>
+
+Enregistrer
+
+</button>
+
+<button
+class="btn-secondary"
+onclick="fermerModal()"
+>
+
+Annuler
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* =====================================
+   CONFIGURATION APPWRITE
+===================================== */
+
+const PROJECT_ID =
+"6ac62abb001c74bb8de5";
+
+const DATABASE_ID =
+"6ac62bca002f025e7f1b";
+
+
+/*
+   REMPLACE CET ID PAR
+   L'ID DE TA TABLE COMMUNICATIONS
+*/
+
+const TABLE_ID =
+"6ac7321e00299f545b6f";
+
+
+const BASE_URL =
+"https://cloud.appwrite.io/v1/tablesdb/" +
+DATABASE_ID +
+"/tables/" +
+TABLE_ID +
+"/rows";
+
+
+let communications = [];
+
+let communicationEnCours = null;
+
+
+/* =====================================
+   MESSAGE
+===================================== */
+
+function afficherMessage(texte,type){
+
+    const box =
+    document.getElementById("message");
+
+    box.textContent = texte;
+
+    box.className =
+    "message " + type;
+
+    box.style.display = "block";
+
+    setTimeout(()=>{
+
+        box.style.display = "none";
+
+    },4000);
+}
+
+
+/* =====================================
+   CHARGER
+===================================== */
+
+async function chargerCommunications(){
+
+    try{
+
+        const response =
+        await fetch(BASE_URL,{
+
+            method:"GET",
+
+            credentials:"include",
+
+            headers:{
+                "Accept":"application/json",
+                "X-Appwrite-Project":
+                PROJECT_ID
+            }
+
+        });
+
+
+        const result =
+        await response.json();
+
+
+        if(!response.ok){
+
+            throw new Error(
+                result.message ||
+                "Erreur de chargement"
+            );
+
+        }
+
+
+        communications =
+        result.rows || [];
+
+
+        afficherCommunications();
+
+        calculerStats();
+
+
+    }catch(error){
+
+        console.error(error);
+
+        afficherMessage(
+            error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =====================================
+   AFFICHER
+===================================== */
+
+function afficherCommunications(){
+
+    const tbody =
+    document.getElementById(
+        "communicationsTable"
+    );
+
+    tbody.innerHTML = "";
+
+
+    const recherche =
+    document.getElementById(
+        "recherche"
+    ).value.toLowerCase();
+
+
+    const filtreType =
+    document.getElementById(
+        "filtreType"
+    ).value;
+
+
+    const filtreStatut =
+    document.getElementById(
+        "filtreStatut"
+    ).value;
+
+
+    const liste =
+    communications.filter(item=>{
+
+        const titre =
+        (item.titre || "")
+        .toLowerCase();
+
+        const contenu =
+        (item.contenu || "")
+        .toLowerCase();
+
+        const type =
+        item.type || "";
+
+        const statut =
+        item.statut || "";
+
+
+        const rechercheOK =
+        titre.includes(recherche) ||
+        contenu.includes(recherche);
+
+
+        const typeOK =
+        !filtreType ||
+        type === filtreType;
+
+
+        const statutOK =
+        !filtreStatut ||
+        statut === filtreStatut;
+
+
+        return rechercheOK &&
+               typeOK &&
+               statutOK;
+
+    });
+
+
+    if(liste.length === 0){
+
+        tbody.innerHTML = `
+
+        <tr>
+
+            <td
+            colspan="6"
+            style="text-align:center;padding:30px"
+            >
+
+            Aucune communication trouvée.
+
+            </td>
+
+        </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    liste.forEach(item=>{
+
+        const tr =
+        document.createElement("tr");
+
+
+        let classeStatut =
+        "badge-brouillon";
+
+
+        if(item.statut === "publie"){
+            classeStatut =
+            "badge-publie";
+        }
+
+
+        if(item.statut === "archive"){
+            classeStatut =
+            "badge-archive";
+        }
+
+
+        let texteStatut =
+        item.statut || "-";
+
+
+        if(texteStatut === "publie"){
+            texteStatut = "Publié";
+        }
+
+        if(texteStatut === "brouillon"){
+            texteStatut = "Brouillon";
+        }
+
+        if(texteStatut === "archive"){
+            texteStatut = "Archivé";
+        }
+
+
+        tr.innerHTML = `
+
+        <td>
+            ${item.titre || "-"}
+        </td>
+
+        <td>
+            ${item.type || "-"}
+        </td>
+
+        <td>
+            ${item.auteur || "-"}
+        </td>
+
+        <td>
+            ${item.datePublication || "-"}
+        </td>
+
+        <td>
+
+            <span
+            class="badge ${classeStatut}"
+            >
+
+            ${texteStatut}
+
+            </span>
+
+        </td>
+
+        <td>
+
+            <button
+            class="btn-secondary"
+            onclick="modifierCommunication('${item.$id}')"
+            >
+            Modifier
+            </button>
+
+            <button
+            class="btn-danger"
+            onclick="supprimerCommunication('${item.$id}')"
+            >
+            Supprimer
+            </button>
+
+        </td>
+
+        `;
+
+
+        tbody.appendChild(tr);
+
+    });
+
+}
+
+
+/* =====================================
+   STATISTIQUES
+===================================== */
+
+function calculerStats(){
+
+    let publiees = 0;
+
+    let brouillons = 0;
+
+    let archivees = 0;
+
+
+    communications.forEach(item=>{
+
+        if(item.statut === "publie"){
+            publiees++;
+        }
+
+        if(item.statut === "brouillon"){
+            brouillons++;
+        }
+
+        if(item.statut === "archive"){
+            archivees++;
+        }
+
+    });
+
+
+    document.getElementById(
+        "totalCommunications"
+    ).textContent =
+    communications.length;
+
+
+    document.getElementById(
+        "totalPubliees"
+    ).textContent =
+    publiees;
+
+
+    document.getElementById(
+        "totalBrouillons"
+    ).textContent =
+    brouillons;
+
+
+    document.getElementById(
+        "totalArchivees"
+    ).textContent =
+    archivees;
+
+}
+
+
+/* =====================================
+   OUVRIR MODAL
+===================================== */
+
+function ouvrirModal(){
+
+    communicationEnCours = null;
+
+
+    document.getElementById(
+        "modalTitle"
+    ).textContent =
+    "Nouvelle communication";
+
+
+    document.getElementById(
+        "titre"
+    ).value = "";
+
+
+    document.getElementById(
+        "contenu"
+    ).value = "";
+
+
+    document.getElementById(
+        "type"
+    ).value =
+    "Annonce";
+
+
+    document.getElementById(
+        "statut"
+    ).value =
+    "publie";
+
+
+    document.getElementById(
+        "datePublication"
+    ).value =
+    new Date()
+    .toISOString()
+    .split("T")[0];
+
+
+    document.getElementById(
+        "auteur"
+    ).value = "";
+
+
+    document.getElementById(
+        "communicationModal"
+    ).style.display =
+    "flex";
+
+}
+
+
+/* =====================================
+   FERMER MODAL
+===================================== */
+
+function fermerModal(){
+
+    document.getElementById(
+        "communicationModal"
+    ).style.display =
+    "none";
+
+}
+
+
+/* =====================================
+   ENREGISTRER
+===================================== */
+
+async function enregistrerCommunication(){
+
+    const titre =
+    document.getElementById(
+        "titre"
+    ).value.trim();
+
+
+    const contenu =
+    document.getElementById(
+        "contenu"
+    ).value.trim();
+
+
+    const type =
+    document.getElementById(
+        "type"
+    ).value;
+
+
+    const statut =
+    document.getElementById(
+        "statut"
+    ).value;
+
+
+    const datePublication =
+    document.getElementById(
+        "datePublication"
+    ).value;
+
+
+    const auteur =
+    document.getElementById(
+        "auteur"
+    ).value.trim();
+
+
+    if(!titre || !contenu){
+
+        afficherMessage(
+            "Veuillez remplir le titre et le contenu.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const data = {
+
+        titre: titre,
+
+        contenu: contenu,
+
+        type: type,
+
+        statut: statut,
+
+        datePublication:
+        datePublication,
+
+        auteur: auteur,
+
+        createurId:
+        "admin"
+
+    };
+
+
+    try{
+
+        let response;
+
+
+        /* CRÉATION */
+
+        if(!communicationEnCours){
+
+            response =
+            await fetch(BASE_URL,{
+
+                method:"POST",
+
+                credentials:"include",
+
+                headers:{
+
+                    "Content-Type":
+                    "application/json",
+
+                    "Accept":
+                    "application/json",
+
+                    "X-Appwrite-Project":
+                    PROJECT_ID
+
+                },
+
+                body:JSON.stringify({
+
+                    rowId:
+                    "communication-" +
+                    Date.now(),
+
+                    data:data
+
+                })
+
+            });
+
+        }
+
+
+        /* MODIFICATION */
+
+        else{
+
+            response =
+            await fetch(
+
+                BASE_URL +
+                "/" +
+                encodeURIComponent(
+                    communicationEnCours
+                ),
+
+                {
+
+                    method:"PATCH",
+
+                    credentials:"include",
+
+                    headers:{
+
+                        "Content-Type":
+                        "application/json",
+
+                        "Accept":
+                        "application/json",
+
+                        "X-Appwrite-Project":
+                        PROJECT_ID
+
+                    },
+
+                    body:JSON.stringify({
+
+                        data:data
+
+                    })
+
+                }
+
+            );
+
+        }
+
+
+        const result =
+        await response.json();
+
+
+        if(!response.ok){
+
+            throw new Error(
+                result.message ||
+                "Erreur lors de l'enregistrement"
+            );
+
+        }
+
+
+        fermerModal();
+
+
+        afficherMessage(
+            communicationEnCours
+            ? "Communication modifiée avec succès."
+            : "Communication créée avec succès.",
+            "success"
+        );
+
+
+        await chargerCommunications();
+
+
+    }catch(error){
+
+        console.error(error);
+
+        afficherMessage(
+            error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =====================================
+   MODIFIER
+===================================== */
+
+function modifierCommunication(id){
+
+    const item =
+    communications.find(
+        c => c.$id === id
+    );
+
+
+    if(!item) return;
+
+
+    communicationEnCours = id;
+
+
+    document.getElementById(
+        "modalTitle"
+    ).textContent =
+    "Modifier la communication";
+
+
+    document.getElementById(
+        "titre"
+    ).value =
+    item.titre || "";
+
+
+    document.getElementById(
+        "contenu"
+    ).value =
+    item.contenu || "";
+
+
+    document.getElementById(
+        "type"
+    ).value =
+    item.type || "Annonce";
+
+
+    document.getElementById(
+        "statut"
+    ).value =
+    item.statut || "brouillon";
+
+
+    document.getElementById(
+        "datePublication"
+    ).value =
+    item.datePublication || "";
+
+
+    document.getElementById(
+        "auteur"
+    ).value =
+    item.auteur || "";
+
+
+    document.getElementById(
+        "communicationModal"
+    ).style.display =
+    "flex";
+
+}
+
+
+/* =====================================
+   SUPPRIMER
+===================================== */
+
+async function supprimerCommunication(id){
+
+    if(!confirm(
+        "Voulez-vous vraiment supprimer cette communication ?"
+    )){
+        return;
+    }
+
+
+    try{
+
+        const response =
+        await fetch(
+
+            BASE_URL +
+            "/" +
+            encodeURIComponent(id),
+
+            {
+
+                method:"DELETE",
+
+                credentials:"include",
+
+                headers:{
+
+                    "Accept":
+                    "application/json",
+
+                    "X-Appwrite-Project":
+                    PROJECT_ID
+
+                }
+
+            }
+
+        );
+
+
+        if(!response.ok){
+
+            const result =
+            await response.json();
+
+            throw new Error(
+                result.message ||
+                "Erreur de suppression"
+            );
+
+        }
+
+
+        afficherMessage(
+            "Communication supprimée avec succès.",
+            "success"
+        );
+
+
+        await chargerCommunications();
+
+
+    }catch(error){
+
+        console.error(error);
+
+        afficherMessage(
+            error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =====================================
+   DÉMARRAGE
+===================================== */
+
+chargerCommunications();
+
+</script>
+
+<script src="admin-guard.js"></script>
+</body>
+</html>

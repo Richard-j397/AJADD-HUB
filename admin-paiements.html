@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AJADD HUB — Gestion des paiements</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f5f6f8;
+    color: #172033;
+}
+
+header {
+    background: #071a33;
+    color: white;
+    padding: 20px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.logo span {
+    color: #d4af37;
+}
+
+.header-right {
+    font-size: 14px;
+}
+
+.container {
+    padding: 30px;
+    max-width: 1500px;
+    margin: auto;
+}
+
+h1 {
+    margin-top: 0;
+    color: #071a33;
+}
+
+.subtitle {
+    color: #6c7480;
+    margin-bottom: 25px;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-bottom: 25px;
+}
+
+.stat {
+    background: white;
+    padding: 22px;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(0,0,0,.06);
+}
+
+.stat-title {
+    color: #777;
+    font-size: 14px;
+}
+
+.stat-value {
+    font-size: 26px;
+    font-weight: bold;
+    margin-top: 8px;
+    color: #071a33;
+}
+
+.toolbar {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+input,
+select,
+textarea {
+    border: 1px solid #d8dce2;
+    border-radius: 8px;
+    padding: 11px 13px;
+    font-size: 14px;
+    outline: none;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: #d4af37;
+}
+
+.search {
+    flex: 1;
+    min-width: 220px;
+}
+
+button {
+    border: none;
+    border-radius: 8px;
+    padding: 11px 16px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-primary {
+    background: #071a33;
+    color: white;
+}
+
+.btn-gold {
+    background: #d4af37;
+    color: #071a33;
+}
+
+.btn-danger {
+    background: #c0392b;
+    color: white;
+}
+
+.btn-success {
+    background: #218c5a;
+    color: white;
+}
+
+.btn-secondary {
+    background: #e8ebef;
+    color: #172033;
+}
+
+.table-container {
+    background: white;
+    border-radius: 12px;
+    overflow-x: auto;
+    box-shadow: 0 3px 12px rgba(0,0,0,.06);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 1000px;
+}
+
+th,
+td {
+    padding: 15px;
+    border-bottom: 1px solid #edf0f3;
+    text-align: left;
+    font-size: 14px;
+}
+
+th {
+    background: #071a33;
+    color: white;
+}
+
+tr:hover {
+    background: #fafafa;
+}
+
+.badge {
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.paye {
+    background: #d9f5e7;
+    color: #167044;
+}
+
+.attente {
+    background: #fff1c7;
+    color: #876500;
+}
+
+.annule {
+    background: #f8d7da;
+    color: #8b1e29;
+}
+
+.actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.empty {
+    text-align: center;
+    padding: 40px;
+    color: #777;
+}
+
+.loading {
+    text-align: center;
+    padding: 30px;
+    color: #777;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.55);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    width: 100%;
+    max-width: 650px;
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 14px;
+    padding: 25px;
+}
+
+.modal h2 {
+    margin-top: 0;
+    color: #071a33;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group.full {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 22px;
+}
+
+@media (max-width: 800px) {
+    .stats {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .container {
+        padding: 15px;
+    }
+
+    header {
+        padding: 15px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-group.full {
+        grid-column: auto;
+    }
+}
+
+@media (max-width: 500px) {
+    .stats {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">
+        AJADD <span>HUB</span>
+    </div>
+
+    <div class="header-right">
+        Administration — Paiements
+    </div>
+</header>
+
+<div class="container">
+
+    <h1>Gestion des paiements</h1>
+
+    <div class="subtitle">
+        Gestion centralisée des paiements AJADD HUB
+    </div>
+
+    <div class="stats">
+
+        <div class="stat">
+            <div class="stat-title">Total encaissé</div>
+            <div class="stat-value" id="totalEncaisse">0 FCFA</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-title">Paiements reçus</div>
+            <div class="stat-value" id="paiementsRecus">0</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-title">En attente</div>
+            <div class="stat-value" id="paiementsAttente">0</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-title">Annulés</div>
+            <div class="stat-value" id="paiementsAnnules">0</div>
+        </div>
+
+    </div>
+
+    <div class="toolbar">
+
+        <input
+            type="text"
+            id="recherche"
+            class="search"
+            placeholder="Rechercher un client, une référence..."
+            oninput="afficherPaiements()"
+        >
+
+        <select id="filtreType" onchange="afficherPaiements()">
+            <option value="">Tous les types</option>
+            <option value="Ticket">Ticket</option>
+            <option value="Inscription">Inscription</option>
+            <option value="Formation">Formation</option>
+            <option value="Autre">Autre</option>
+        </select>
+
+        <select id="filtreStatut" onchange="afficherPaiements()">
+            <option value="">Tous les statuts</option>
+            <option value="Payé">Payé</option>
+            <option value="En attente">En attente</option>
+            <option value="Annulé">Annulé</option>
+        </select>
+
+        <select id="filtreMode" onchange="afficherPaiements()">
+            <option value="">Tous les modes</option>
+            <option value="TMoney">TMoney</option>
+            <option value="Flooz">Flooz</option>
+            <option value="Espèces">Espèces</option>
+            <option value="Virement">Virement</option>
+            <option value="Carte">Carte</option>
+        </select>
+
+        <button class="btn-gold" onclick="ouvrirModal()">
+            ＋ Nouveau paiement
+        </button>
+
+    </div>
+
+    <div class="table-container">
+
+        <div id="chargement" class="loading">
+            Chargement des paiements...
+        </div>
+
+        <table id="tablePaiements" style="display:none;">
+
+            <thead>
+                <tr>
+                    <th>Client</th>
+                    <th>Référence</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Montant</th>
+                    <th>Mode</th>
+                    <th>Statut</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody id="listePaiements"></tbody>
+
+        </table>
+
+        <div id="vide" class="empty" style="display:none;">
+            Aucun paiement trouvé.
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- MODAL -->
+
+<div class="modal" id="modalPaiement">
+
+    <div class="modal-content">
+
+        <h2 id="titreModal">Nouveau paiement</h2>
+
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label>Client</label>
+                <input type="text" id="client">
+            </div>
+
+            <div class="form-group">
+                <label>Référence</label>
+                <input type="text" id="reference">
+            </div>
+
+            <div class="form-group">
+                <label>Type</label>
+
+                <select id="type">
+                    <option value="Ticket">Ticket</option>
+                    <option value="Inscription">Inscription</option>
+                    <option value="Formation">Formation</option>
+                    <option value="Autre">Autre</option>
+                </select>
+
+            </div>
+
+            <div class="form-group">
+                <label>Montant (FCFA)</label>
+                <input type="number" id="montant" min="0">
+            </div>
+
+            <div class="form-group full">
+                <label>Description</label>
+                <input type="text" id="description">
+            </div>
+
+            <div class="form-group">
+                <label>Mode de paiement</label>
+
+                <select id="mode">
+                    <option value="TMoney">TMoney</option>
+                    <option value="Flooz">Flooz</option>
+                    <option value="Espèces">Espèces</option>
+                    <option value="Virement">Virement</option>
+                    <option value="Carte">Carte</option>
+                </select>
+
+            </div>
+
+            <div class="form-group">
+                <label>Statut</label>
+
+                <select id="statut">
+                    <option value="Payé">Payé</option>
+                    <option value="En attente">En attente</option>
+                    <option value="Annulé">Annulé</option>
+                </select>
+
+            </div>
+
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" id="date">
+            </div>
+
+        </div>
+
+        <div class="form-actions">
+
+            <button
+                class="btn-secondary"
+                onclick="fermerModal()"
+            >
+                Annuler
+            </button>
+
+            <button
+                class="btn-primary"
+                onclick="enregistrerPaiement()"
+            >
+                Enregistrer
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const PROJECT_ID = "6ac62abb001c74bb8de5";
+
+const DATABASE_ID = "6ac62bca002f025e7f1b";
+
+const TABLE_ID = "6ac7026d0022d051f416";
+
+const BASE_URL =
+    "https://cloud.appwrite.io/v1/tablesdb/" +
+    DATABASE_ID +
+    "/tables/" +
+    TABLE_ID +
+    "/rows";
+
+
+let paiements = [];
+
+let paiementEnModification = null;
+
+
+/* ===============================
+   CHARGER LES PAIEMENTS
+================================ */
+
+async function chargerPaiements() {
+
+    const chargement = document.getElementById("chargement");
+
+    try {
+
+        const response = await fetch(
+            BASE_URL,
+            {
+                method: "GET",
+                credentials: "include",
+                headers: {
+                    "Accept": "application/json",
+                    "X-Appwrite-Project": PROJECT_ID
+                }
+            }
+        );
+
+        const resultat = await response.json();
+
+        console.log("Réponse Appwrite :", resultat);
+
+        if (!response.ok) {
+
+            throw new Error(
+                resultat.message ||
+                "Impossible de charger les paiements"
+            );
+
+        }
+
+        paiements = resultat.rows || [];
+
+        chargement.style.display = "none";
+
+        document.getElementById("tablePaiements").style.display =
+            "table";
+
+        afficherPaiements();
+
+    } catch (erreur) {
+
+        console.error(erreur);
+
+        chargement.innerHTML =
+            "Erreur lors du chargement des paiements : " +
+            erreur.message;
+
+    }
+
+}
+
+
+/* ===============================
+   AFFICHER
+================================ */
+
+function afficherPaiements() {
+
+    const recherche =
+        document.getElementById("recherche")
+        .value
+        .toLowerCase();
+
+    const type =
+        document.getElementById("filtreType").value;
+
+    const statut =
+        document.getElementById("filtreStatut").value;
+
+    const mode =
+        document.getElementById("filtreMode").value;
+
+    const liste =
+        document.getElementById("listePaiements");
+
+    liste.innerHTML = "";
+
+    const filtres = paiements.filter(p => {
+
+        const texte = (
+
+            (p.client || "") +
+            " " +
+            (p.reference || "") +
+            " " +
+            (p.description || "")
+
+        ).toLowerCase();
+
+        return (
+
+            texte.includes(recherche) &&
+
+            (!type || p.type === type) &&
+
+            (!statut || p.statut === statut) &&
+
+            (!mode || p.mode === mode)
+
+        );
+
+    });
+
+    document.getElementById("vide").style.display =
+        filtres.length === 0 ? "block" : "none";
+
+    filtres.forEach(p => {
+
+        const ligne = document.createElement("tr");
+
+        ligne.innerHTML = `
+
+            <td>${echapper(p.client)}</td>
+
+            <td>${echapper(p.reference)}</td>
+
+            <td>${echapper(p.type)}</td>
+
+            <td>${echapper(p.description)}</td>
+
+            <td>
+                <strong>
+                    ${formatMontant(p.montant)} FCFA
+                </strong>
+            </td>
+
+            <td>${echapper(p.mode)}</td>
+
+            <td>
+                ${badgeStatut(p.statut)}
+            </td>
+
+            <td>${echapper(p.date)}</td>
+
+            <td>
+
+                <div class="actions">
+
+                    <button
+                        class="btn-secondary"
+                        onclick="modifierPaiement('${p.$id}')"
+                    >
+                        Modifier
+                    </button>
+
+                    ${
+                        p.statut === "En attente"
+                        ?
+                        `
+                        <button
+                            class="btn-success"
+                            onclick="validerPaiement('${p.$id}')"
+                        >
+                            Valider
+                        </button>
+                        `
+                        :
+                        ""
+                    }
+
+                    <button
+                        class="btn-danger"
+                        onclick="supprimerPaiement('${p.$id}')"
+                    >
+                        Supprimer
+                    </button>
+
+                </div>
+
+            </td>
+
+        `;
+
+        liste.appendChild(ligne);
+
+    });
+
+    mettreAJourStats();
+
+}
+
+
+/* ===============================
+   STATISTIQUES
+================================ */
+
+function mettreAJourStats() {
+
+    let total = 0;
+
+    let recus = 0;
+
+    let attente = 0;
+
+    let annules = 0;
+
+    paiements.forEach(p => {
+
+        const montant =
+            Number(p.montant) || 0;
+
+        if (p.statut === "Payé") {
+
+            total += montant;
+
+            recus++;
+
+        }
+
+        if (p.statut === "En attente") {
+
+            attente++;
+
+        }
+
+        if (p.statut === "Annulé") {
+
+            annules++;
+
+        }
+
+    });
+
+    document.getElementById("totalEncaisse")
+        .textContent =
+        formatMontant(total) + " FCFA";
+
+    document.getElementById("paiementsRecus")
+        .textContent = recus;
+
+    document.getElementById("paiementsAttente")
+        .textContent = attente;
+
+    document.getElementById("paiementsAnnules")
+        .textContent = annules;
+
+}
+
+
+/* ===============================
+   BADGE
+================================ */
+
+function badgeStatut(statut) {
+
+    if (statut === "Payé") {
+
+        return `<span class="badge paye">Payé</span>`;
+
+    }
+
+    if (statut === "En attente") {
+
+        return `<span class="badge attente">En attente</span>`;
+
+    }
+
+    return `<span class="badge annule">Annulé</span>`;
+
+}
+
+
+/* ===============================
+   MODAL
+================================ */
+
+function ouvrirModal() {
+
+    paiementEnModification = null;
+
+    document.getElementById("titreModal")
+        .textContent = "Nouveau paiement";
+
+    document.getElementById("client").value = "";
+
+    document.getElementById("reference").value =
+        "PAY-" + Date.now();
+
+    document.getElementById("type").value =
+        "Ticket";
+
+    document.getElementById("description").value = "";
+
+    document.getElementById("montant").value = "";
+
+    document.getElementById("mode").value =
+        "TMoney";
+
+    document.getElementById("statut").value =
+        "Payé";
+
+    document.getElementById("date").value =
+        new Date().toISOString().split("T")[0];
+
+    document.getElementById("modalPaiement").style.display =
+        "flex";
+
+}
+
+
+function fermerModal() {
+
+    document.getElementById("modalPaiement").style.display =
+        "none";
+
+}
+
+
+/* ===============================
+   ENREGISTRER
+================================ */
+
+async function enregistrerPaiement() {
+
+    const data = {
+
+        client:
+            document.getElementById("client").value.trim(),
+
+        reference:
+            document.getElementById("reference").value.trim(),
+
+        type:
+            document.getElementById("type").value,
+
+        description:
+            document.getElementById("description").value.trim(),
+
+        montant:
+            document.getElementById("montant").value.trim(),
+
+        mode:
+            document.getElementById("mode").value,
+
+        statut:
+            document.getElementById("statut").value,
+
+        date:
+            document.getElementById("date").value
+
+    };
+
+
+    if (!data.client) {
+
+        alert("Veuillez saisir le nom du client.");
+
+        return;
+
+    }
+
+    if (!data.montant) {
+
+        alert("Veuillez saisir le montant.");
+
+        return;
+
+    }
+
+
+    try {
+
+        let response;
+
+        if (paiementEnModification) {
+
+            response = await fetch(
+                BASE_URL + "/" +
+                encodeURIComponent(paiementEnModification),
+                {
+                    method: "PATCH",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json",
+                        "X-Appwrite-Project": PROJECT_ID
+                    },
+                    body: JSON.stringify({
+                        data: data
+                    })
+                }
+            );
+
+        } else {
+
+            const rowId =
+                "paiement-" + Date.now();
+
+            response = await fetch(
+                BASE_URL,
+                {
+                    method: "POST",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json",
+                        "X-Appwrite-Project": PROJECT_ID
+                    },
+                    body: JSON.stringify({
+                        rowId: rowId,
+                        data: data
+                    })
+                }
+            );
+
+        }
+
+
+        const resultat =
+            await response.json();
+
+        console.log(
+            "Réponse sauvegarde :",
+            resultat
+        );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                resultat.message ||
+                "Erreur lors de l'enregistrement"
+            );
+
+        }
+
+
+        alert(
+            paiementEnModification
+            ?
+            "Paiement modifié avec succès."
+            :
+            "Paiement enregistré avec succès."
+        );
+
+        fermerModal();
+
+        await chargerPaiements();
+
+
+    } catch (erreur) {
+
+        console.error(erreur);
+
+        alert(
+            "Erreur : " +
+            erreur.message
+        );
+
+    }
+
+}
+
+
+/* ===============================
+   MODIFIER
+================================ */
+
+function modifierPaiement(id) {
+
+    const paiement =
+        paiements.find(p => p.$id === id);
+
+    if (!paiement) return;
+
+    paiementEnModification = id;
+
+    document.getElementById("titreModal")
+        .textContent = "Modifier le paiement";
+
+    document.getElementById("client").value =
+        paiement.client || "";
+
+    document.getElementById("reference").value =
+        paiement.reference || "";
+
+    document.getElementById("type").value =
+        paiement.type || "Autre";
+
+    document.getElementById("description").value =
+        paiement.description || "";
+
+    document.getElementById("montant").value =
+        paiement.montant || "";
+
+    document.getElementById("mode").value =
+        paiement.mode || "Espèces";
+
+    document.getElementById("statut").value =
+        paiement.statut || "En attente";
+
+    document.getElementById("date").value =
+        paiement.date || "";
+
+    document.getElementById("modalPaiement").style.display =
+        "flex";
+
+}
+
+
+/* ===============================
+   VALIDER
+================================ */
+
+async function validerPaiement(id) {
+
+    if (!confirm(
+        "Voulez-vous valider ce paiement ?"
+    )) return;
+
+
+    try {
+
+        const response = await fetch(
+            BASE_URL + "/" +
+            encodeURIComponent(id),
+            {
+                method: "PATCH",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "X-Appwrite-Project": PROJECT_ID
+                },
+                body: JSON.stringify({
+                    data: {
+                        statut: "Payé"
+                    }
+                })
+            }
+        );
+
+
+        const resultat =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                resultat.message ||
+                "Impossible de valider le paiement"
+            );
+
+        }
+
+
+        alert("Paiement validé.");
+
+        await chargerPaiements();
+
+
+    } catch (erreur) {
+
+        alert(
+            "Erreur : " +
+            erreur.message
+        );
+
+    }
+
+}
+
+
+/* ===============================
+   SUPPRIMER
+================================ */
+
+async function supprimerPaiement(id) {
+
+    if (!confirm(
+        "Voulez-vous vraiment supprimer ce paiement ?"
+    )) return;
+
+
+    try {
+
+        const response = await fetch(
+            BASE_URL + "/" +
+            encodeURIComponent(id),
+            {
+                method: "DELETE",
+                credentials: "include",
+                headers: {
+                    "Accept": "application/json",
+                    "X-Appwrite-Project": PROJECT_ID
+                }
+            }
+        );
+
+
+        const resultat =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                resultat.message ||
+                "Impossible de supprimer le paiement"
+            );
+
+        }
+
+
+        alert("Paiement supprimé.");
+
+        await chargerPaiements();
+
+
+    } catch (erreur) {
+
+        alert(
+            "Erreur : " +
+            erreur.message
+        );
+
+    }
+
+}
+
+
+/* ===============================
+   OUTILS
+================================ */
+
+function formatMontant(nombre) {
+
+    return Number(nombre || 0)
+        .toLocaleString("fr-FR");
+
+}
+
+
+function echapper(valeur) {
+
+    if (valeur === null ||
+        valeur === undefined) {
+
+        return "";
+
+    }
+
+    return String(valeur)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* ===============================
+   DEMARRAGE
+================================ */
+
+chargerPaiements();
+
+</script>
+
+<script src="admin-guard.js"></script>
+</body>
+</html>

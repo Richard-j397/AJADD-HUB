@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AJADD HUB - Utilisateurs</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#f5f7fb;
+    color:#1f2937;
+}
+
+header{
+    background:#0b1f3a;
+    color:white;
+    padding:20px;
+}
+
+header h1{
+    margin:0 0 5px;
+}
+
+.container{
+    max-width:1200px;
+    margin:25px auto;
+    padding:0 15px;
+}
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+    margin-bottom:20px;
+}
+
+.stat{
+    background:white;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 3px 12px rgba(0,0,0,.08);
+}
+
+.stat strong{
+    display:block;
+    font-size:28px;
+    color:#0b1f3a;
+    margin-top:8px;
+}
+
+.section{
+    background:white;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 3px 12px rgba(0,0,0,.08);
+    margin-bottom:20px;
+}
+
+.section h2{
+    margin-top:0;
+    color:#0b1f3a;
+}
+
+.search{
+    display:flex;
+    gap:10px;
+    margin-bottom:20px;
+}
+
+.search input{
+    flex:1;
+    padding:12px;
+    border:1px solid #d1d5db;
+    border-radius:8px;
+}
+
+button{
+    border:0;
+    padding:10px 15px;
+    border-radius:7px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.btn{
+    background:#0b1f3a;
+    color:white;
+}
+
+.gold{
+    background:#c9a227;
+    color:white;
+}
+
+.gray{
+    background:#6b7280;
+    color:white;
+}
+
+.red{
+    background:#dc2626;
+    color:white;
+}
+
+.table-container{
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:850px;
+}
+
+th,
+td{
+    padding:12px;
+    border-bottom:1px solid #e5e7eb;
+    text-align:left;
+}
+
+th{
+    background:#f3f4f6;
+    color:#0b1f3a;
+}
+
+.badge{
+    display:inline-block;
+    padding:5px 9px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:bold;
+}
+
+.actif{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.inactif{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+.admin{
+    background:#fef3c7;
+    color:#92400e;
+}
+
+.membre{
+    background:#dbeafe;
+    color:#1e40af;
+}
+
+.candidat{
+    background:#f3e8ff;
+    color:#6b21a8;
+}
+
+.actions{
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+}
+
+.empty{
+    text-align:center;
+    padding:30px;
+    color:#6b7280;
+}
+
+.message{
+    display:none;
+    padding:14px;
+    border-radius:8px;
+    margin-bottom:20px;
+}
+
+.success{
+    display:block;
+    background:#dcfce7;
+    color:#166534;
+}
+
+.warning{
+    display:block;
+    background:#fef3c7;
+    color:#92400e;
+}
+
+@media(max-width:800px){
+
+    .stats{
+        grid-template-columns:1fr 1fr;
+    }
+
+}
+
+@media(max-width:500px){
+
+    .stats{
+        grid-template-columns:1fr;
+    }
+
+    .search{
+        flex-direction:column;
+    }
+
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+    <h1>AJADD HUB</h1>
+
+    <div>
+        Gestion des utilisateurs
+    </div>
+
+</header>
+
+
+<div class="container">
+
+    <div
+        id="message"
+        class="message"
+    ></div>
+
+
+    <!-- STATISTIQUES -->
+
+    <div class="stats">
+
+        <div class="stat">
+            Total utilisateurs
+            <strong id="totalUsers">0</strong>
+        </div>
+
+        <div class="stat">
+            Administrateurs
+            <strong id="totalAdmins">0</strong>
+        </div>
+
+        <div class="stat">
+            Membres
+            <strong id="totalMembres">0</strong>
+        </div>
+
+        <div class="stat">
+            Utilisateurs actifs
+            <strong id="totalActifs">0</strong>
+        </div>
+
+    </div>
+
+
+    <!-- UTILISATEURS -->
+
+    <div class="section">
+
+        <h2>Utilisateurs AJADD HUB</h2>
+
+        <div class="search">
+
+            <input
+                type="text"
+                id="recherche"
+                placeholder="Rechercher par nom, email ou téléphone..."
+                oninput="afficherUtilisateurs()"
+            >
+
+            <button
+                class="gold"
+                onclick="ajouterUtilisateur()"
+            >
+                + Ajouter
+            </button>
+
+        </div>
+
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Nom</th>
+
+                        <th>Email</th>
+
+                        <th>Téléphone</th>
+
+                        <th>Rôle</th>
+
+                        <th>Statut</th>
+
+                        <th>Actions</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="listeUtilisateurs">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- INFORMATIONS -->
+
+    <div class="section">
+
+        <h2>Gestion des comptes</h2>
+
+        <p>
+            Cette interface permet actuellement de visualiser
+            et gérer les utilisateurs enregistrés localement.
+        </p>
+
+        <p>
+            La connexion réelle avec les utilisateurs
+            <strong>Appwrite Auth</strong> sera effectuée
+            après la finalisation des pages administratives.
+        </p>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* ==========================================
+   DONNÉES LOCALES
+========================================== */
+
+const STORAGE_KEY =
+    "ajaddUtilisateurs";
+
+
+/* ==========================================
+   UTILISATEURS PAR DÉFAUT
+========================================== */
+
+const utilisateursParDefaut = [
+
+    {
+        id:"user-001",
+        nom:"Komi AMEGNONVO",
+        email:"missformedivine@gmail.com",
+        telephone:"+228 93 84 92 29",
+        role:"Administrateur",
+        statut:"Actif"
+    },
+
+    {
+        id:"user-002",
+        nom:"TCHALIM Daniella",
+        email:"daniella@example.com",
+        telephone:"+228 91 00 00 00",
+        role:"Membre",
+        statut:"Actif"
+    },
+
+    {
+        id:"user-003",
+        nom:"AMEGADZE",
+        email:"ajaddtogo1@gmail.com",
+        telephone:"+228 91 51 89 31",
+        role:"Candidat",
+        statut:"Actif"
+    }
+
+];
+
+
+/* ==========================================
+   CHARGER LES UTILISATEURS
+========================================== */
+
+function chargerUtilisateurs(){
+
+    const sauvegarde =
+        localStorage.getItem(
+            STORAGE_KEY
+        );
+
+
+    if(!sauvegarde){
+
+        localStorage.setItem(
+
+            STORAGE_KEY,
+
+            JSON.stringify(
+                utilisateursParDefaut
+            )
+
+        );
+
+        return utilisateursParDefaut;
+
+    }
+
+
+    try{
+
+        return JSON.parse(
+            sauvegarde
+        );
+
+    }catch(error){
+
+        return utilisateursParDefaut;
+
+    }
+
+}
+
+
+/* ==========================================
+   SAUVEGARDER
+========================================== */
+
+function sauvegarderUtilisateurs(
+    utilisateurs
+){
+
+    localStorage.setItem(
+
+        STORAGE_KEY,
+
+        JSON.stringify(
+            utilisateurs
+        )
+
+    );
+
+}
+
+
+/* ==========================================
+   AFFICHER
+========================================== */
+
+function afficherUtilisateurs(){
+
+    const utilisateurs =
+        chargerUtilisateurs();
+
+
+    const recherche =
+        document
+        .getElementById("recherche")
+        .value
+        .toLowerCase()
+        .trim();
+
+
+    const liste =
+        utilisateurs.filter(
+            user =>
+
+                user.nom
+                .toLowerCase()
+                .includes(recherche)
+
+                ||
+
+                user.email
+                .toLowerCase()
+                .includes(recherche)
+
+                ||
+
+                user.telephone
+                .toLowerCase()
+                .includes(recherche)
+        );
+
+
+    const tbody =
+        document.getElementById(
+            "listeUtilisateurs"
+        );
+
+
+    tbody.innerHTML = "";
+
+
+    if(liste.length === 0){
+
+        tbody.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="6"
+                    class="empty"
+                >
+                    Aucun utilisateur trouvé.
+                </td>
+
+            </tr>
+
+        `;
+
+        actualiserStats(
+            utilisateurs
+        );
+
+        return;
+
+    }
+
+
+    liste.forEach(
+        user => {
+
+            const tr =
+                document.createElement(
+                    "tr"
+                );
+
+
+            let roleClass =
+                "membre";
+
+
+            if(
+                user.role ===
+                "Administrateur"
+            ){
+
+                roleClass =
+                    "admin";
+
+            }
+
+
+            if(
+                user.role ===
+                "Candidat"
+            ){
+
+                roleClass =
+                    "candidat";
+
+            }
+
+
+            const statutClass =
+                user.statut === "Actif"
+                    ? "actif"
+                    : "inactif";
+
+
+            tr.innerHTML = `
+
+                <td>
+                    <strong>
+                        ${echapper(user.nom)}
+                    </strong>
+                </td>
+
+                <td>
+                    ${echapper(user.email)}
+                </td>
+
+                <td>
+                    ${echapper(user.telephone)}
+                </td>
+
+                <td>
+                    <span class="badge ${roleClass}">
+                        ${echapper(user.role)}
+                    </span>
+                </td>
+
+                <td>
+                    <span class="badge ${statutClass}">
+                        ${echapper(user.statut)}
+                    </span>
+                </td>
+
+                <td>
+
+                    <div class="actions">
+
+                        <button
+                            class="btn"
+                            onclick="modifierUtilisateur('${user.id}')"
+                        >
+                            Modifier
+                        </button>
+
+                        <button
+                            class="gray"
+                            onclick="changerStatut('${user.id}')"
+                        >
+                            Statut
+                        </button>
+
+                        <button
+                            class="red"
+                            onclick="supprimerUtilisateur('${user.id}')"
+                        >
+                            Supprimer
+                        </button>
+
+                    </div>
+
+                </td>
+
+            `;
+
+
+            tbody.appendChild(
+                tr
+            );
+
+        }
+    );
+
+
+    actualiserStats(
+        utilisateurs
+    );
+
+}
+
+
+/* ==========================================
+   STATISTIQUES
+========================================== */
+
+function actualiserStats(
+    utilisateurs
+){
+
+    document.getElementById(
+        "totalUsers"
+    ).textContent =
+        utilisateurs.length;
+
+
+    document.getElementById(
+        "totalAdmins"
+    ).textContent =
+        utilisateurs.filter(
+            u =>
+                u.role ===
+                "Administrateur"
+        ).length;
+
+
+    document.getElementById(
+        "totalMembres"
+    ).textContent =
+        utilisateurs.filter(
+            u =>
+                u.role ===
+                "Membre"
+        ).length;
+
+
+    document.getElementById(
+        "totalActifs"
+    ).textContent =
+        utilisateurs.filter(
+            u =>
+                u.statut ===
+                "Actif"
+        ).length;
+
+}
+
+
+/* ==========================================
+   AJOUTER
+========================================== */
+
+function ajouterUtilisateur(){
+
+    const nom =
+        prompt(
+            "Nom complet de l'utilisateur :"
+        );
+
+
+    if(!nom){
+
+        return;
+
+    }
+
+
+    const email =
+        prompt(
+            "Adresse e-mail :"
+        );
+
+
+    if(!email){
+
+        return;
+
+    }
+
+
+    const telephone =
+        prompt(
+            "Numéro de téléphone :"
+        ) || "";
+
+
+    const role =
+        prompt(
+            "Rôle : Administrateur, Membre ou Candidat",
+            "Membre"
+        ) || "Membre";
+
+
+    const utilisateurs =
+        chargerUtilisateurs();
+
+
+    utilisateurs.push({
+
+        id:
+            "user-" +
+            Date.now(),
+
+        nom:
+            nom,
+
+        email:
+            email,
+
+        telephone:
+            telephone,
+
+        role:
+            role,
+
+        statut:
+            "Actif"
+
+    });
+
+
+    sauvegarderUtilisateurs(
+        utilisateurs
+    );
+
+
+    afficherUtilisateurs();
+
+
+    afficherMessage(
+        "Utilisateur ajouté avec succès."
+    );
+
+}
+
+
+/* ==========================================
+   MODIFIER
+========================================== */
+
+function modifierUtilisateur(
+    id
+){
+
+    const utilisateurs =
+        chargerUtilisateurs();
+
+
+    const user =
+        utilisateurs.find(
+            u =>
+                u.id === id
+        );
+
+
+    if(!user){
+
+        return;
+
+    }
+
+
+    const nom =
+        prompt(
+            "Nom :",
+            user.nom
+        );
+
+
+    if(nom !== null){
+
+        user.nom =
+            nom;
+
+    }
+
+
+    const email =
+        prompt(
+            "E-mail :",
+            user.email
+        );
+
+
+    if(email !== null){
+
+        user.email =
+            email;
+
+    }
+
+
+    const telephone =
+        prompt(
+            "Téléphone :",
+            user.telephone
+        );
+
+
+    if(telephone !== null){
+
+        user.telephone =
+            telephone;
+
+    }
+
+
+    const role =
+        prompt(
+            "Rôle :",
+            user.role
+        );
+
+
+    if(role !== null){
+
+        user.role =
+            role;
+
+    }
+
+
+    sauvegarderUtilisateurs(
+        utilisateurs
+    );
+
+
+    afficherUtilisateurs();
+
+
+    afficherMessage(
+        "Utilisateur modifié avec succès."
+    );
+
+}
+
+
+/* ==========================================
+   CHANGER STATUT
+========================================== */
+
+function changerStatut(
+    id
+){
+
+    const utilisateurs =
+        chargerUtilisateurs();
+
+
+    const user =
+        utilisateurs.find(
+            u =>
+                u.id === id
+        );
+
+
+    if(!user){
+
+        return;
+
+    }
+
+
+    user.statut =
+        user.statut === "Actif"
+            ? "Inactif"
+            : "Actif";
+
+
+    sauvegarderUtilisateurs(
+        utilisateurs
+    );
+
+
+    afficherUtilisateurs();
+
+
+    afficherMessage(
+        "Statut de l'utilisateur mis à jour."
+    );
+
+}
+
+
+/* ==========================================
+   SUPPRIMER
+========================================== */
+
+function supprimerUtilisateur(
+    id
+){
+
+    const confirmation =
+        confirm(
+            "Voulez-vous vraiment supprimer cet utilisateur ?"
+        );
+
+
+    if(!confirmation){
+
+        return;
+
+    }
+
+
+    let utilisateurs =
+        chargerUtilisateurs();
+
+
+    utilisateurs =
+        utilisateurs.filter(
+            u =>
+                u.id !== id
+        );
+
+
+    sauvegarderUtilisateurs(
+        utilisateurs
+    );
+
+
+    afficherUtilisateurs();
+
+
+    afficherMessage(
+        "Utilisateur supprimé."
+    );
+
+}
+
+
+/* ==========================================
+   MESSAGE
+========================================== */
+
+function afficherMessage(
+    texte
+){
+
+    const message =
+        document.getElementById(
+            "message"
+        );
+
+
+    message.className =
+        "message success";
+
+
+    message.textContent =
+        texte;
+
+
+    setTimeout(
+        () => {
+
+            message.className =
+                "message";
+
+        },
+        3000
+    );
+
+}
+
+
+/* ==========================================
+   SÉCURITÉ HTML
+========================================== */
+
+function echapper(
+    texte
+){
+
+    return String(texte)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* ==========================================
+   DÉMARRAGE
+========================================== */
+
+afficherUtilisateurs();
+
+</script>
+
+<script src="admin-guard.js"></script>
+</body>
+</html>

@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AJADD HUB — Gestion des Tickets</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    background:#f5f6fa;
+    color:#222;
+}
+
+header{
+    background:#111827;
+    color:white;
+    padding:20px;
+}
+
+header h1{
+    font-size:24px;
+}
+
+header p{
+    margin-top:5px;
+    color:#d1d5db;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+    padding:25px;
+}
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+    margin-bottom:25px;
+}
+
+.card{
+    background:white;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 3px 12px rgba(0,0,0,.08);
+}
+
+.card h3{
+    color:#6b7280;
+    font-size:14px;
+    margin-bottom:8px;
+}
+
+.card strong{
+    font-size:26px;
+}
+
+.actions{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:20px;
+}
+
+button{
+    border:none;
+    padding:11px 16px;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.btn-primary{
+    background:#111827;
+    color:white;
+}
+
+.btn-success{
+    background:#16a34a;
+    color:white;
+}
+
+.btn-danger{
+    background:#dc2626;
+    color:white;
+}
+
+.btn-secondary{
+    background:#e5e7eb;
+    color:#111827;
+}
+
+.filters{
+    display:flex;
+    gap:10px;
+    margin-bottom:20px;
+    flex-wrap:wrap;
+}
+
+input,select{
+    padding:12px;
+    border:1px solid #d1d5db;
+    border-radius:8px;
+    background:white;
+}
+
+input{
+    flex:1;
+    min-width:220px;
+}
+
+.table-container{
+    background:white;
+    border-radius:12px;
+    overflow:auto;
+    box-shadow:0 3px 12px rgba(0,0,0,.08);
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th,td{
+    padding:14px;
+    border-bottom:1px solid #eee;
+    text-align:left;
+}
+
+th{
+    background:#f9fafb;
+}
+
+.badge{
+    padding:5px 9px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:bold;
+}
+
+.badge-open{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.badge-closed{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.55);
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+
+.modal-content{
+    background:white;
+    width:100%;
+    max-width:550px;
+    padding:25px;
+    border-radius:15px;
+    max-height:90vh;
+    overflow:auto;
+}
+
+.modal-content h2{
+    margin-bottom:20px;
+}
+
+.form-group{
+    margin-bottom:15px;
+}
+
+.form-group label{
+    display:block;
+    margin-bottom:6px;
+    font-weight:bold;
+}
+
+.form-group input,
+.form-group select{
+    width:100%;
+}
+
+.modal-actions{
+    display:flex;
+    gap:10px;
+    margin-top:20px;
+}
+
+.message{
+    margin-bottom:15px;
+    padding:12px;
+    border-radius:8px;
+    display:none;
+}
+
+.success{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.error{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+@media(max-width:800px){
+    .stats{
+        grid-template-columns:repeat(2,1fr);
+    }
+}
+
+@media(max-width:500px){
+    .stats{
+        grid-template-columns:1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>AJADD HUB — Gestion des Tickets</h1>
+    <p>Gestion des billets, stocks, ventes et recettes</p>
+</header>
+
+<div class="container">
+
+    <div id="message" class="message"></div>
+
+    <div class="stats">
+
+        <div class="card">
+            <h3>Types de tickets</h3>
+            <strong id="totalTypes">0</strong>
+        </div>
+
+        <div class="card">
+            <h3>Tickets disponibles</h3>
+            <strong id="totalStock">0</strong>
+        </div>
+
+        <div class="card">
+            <h3>Tickets vendus</h3>
+            <strong id="totalVendus">0</strong>
+        </div>
+
+        <div class="card">
+            <h3>Recettes potentielles</h3>
+            <strong id="totalRecettes">0 FCFA</strong>
+        </div>
+
+    </div>
+
+    <div class="actions">
+        <button class="btn-primary" onclick="ouvrirModal()">
+            + Nouveau ticket
+        </button>
+
+        <button class="btn-secondary" onclick="chargerTickets()">
+            Actualiser
+        </button>
+    </div>
+
+    <div class="filters">
+
+        <input
+            type="text"
+            id="recherche"
+            placeholder="Rechercher un événement ou ticket..."
+            oninput="afficherTickets()"
+        >
+
+        <select id="filtreStatut" onchange="afficherTickets()">
+            <option value="">Tous les statuts</option>
+            <option value="ouvert">Ouvert</option>
+            <option value="ferme">Fermé</option>
+        </select>
+
+    </div>
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Événement</th>
+                    <th>Type</th>
+                    <th>Prix</th>
+                    <th>Stock</th>
+                    <th>Vendus</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody id="ticketsTable">
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<!-- MODAL -->
+
+<div class="modal" id="ticketModal">
+
+    <div class="modal-content">
+
+        <h2 id="modalTitle">Nouveau ticket</h2>
+
+        <div class="form-group">
+            <label>Événement</label>
+            <input type="text" id="evenement">
+        </div>
+
+        <div class="form-group">
+            <label>Type de ticket</label>
+            <select id="type">
+                <option value="Standard">Standard</option>
+                <option value="Réservation">Réservation</option>
+                <option value="VIP">VIP</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Prix (FCFA)</label>
+            <input type="number" id="prix">
+        </div>
+
+        <div class="form-group">
+            <label>Quantité</label>
+            <input type="number" id="quantite">
+        </div>
+
+        <div class="form-group">
+            <label>Tickets déjà vendus</label>
+            <input type="number" id="vendus" value="0">
+        </div>
+
+        <div class="form-group">
+            <label>Statut</label>
+            <select id="statut">
+                <option value="ouvert">Ouvert</option>
+                <option value="ferme">Fermé</option>
+            </select>
+        </div>
+
+        <div class="modal-actions">
+
+            <button
+                class="btn-success"
+                onclick="enregistrerTicket()">
+                Enregistrer
+            </button>
+
+            <button
+                class="btn-secondary"
+                onclick="fermerModal()">
+                Annuler
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+/* ==============================
+   CONFIGURATION APPWRITE
+============================== */
+
+const PROJECT_ID = "6ac62abb001c74bb8de5";
+
+const DATABASE_ID = "6ac62bca002f025e7f1b";
+
+/*
+   IMPORTANT :
+   REMPLACE CET ID PAR L'ID
+   DE TA TABLE Tickets.
+*/
+
+const TABLE_ID = "6ac707b1001a51f6ed44";
+
+const BASE_URL =
+    "https://cloud.appwrite.io/v1/tablesdb/" +
+    DATABASE_ID +
+    "/tables/" +
+    TABLE_ID +
+    "/rows";
+
+
+let tickets = [];
+let ticketEnCours = null;
+
+
+/* ==============================
+   MESSAGE
+============================== */
+
+function afficherMessage(message, type){
+
+    const box = document.getElementById("message");
+
+    box.textContent = message;
+
+    box.className = "message " + type;
+
+    box.style.display = "block";
+
+    setTimeout(() => {
+        box.style.display = "none";
+    }, 4000);
+}
+
+
+/* ==============================
+   CHARGER LES TICKETS
+============================== */
+
+async function chargerTickets(){
+
+    try{
+
+        const response = await fetch(BASE_URL, {
+
+            method:"GET",
+
+            credentials:"include",
+
+            headers:{
+                "Accept":"application/json",
+                "X-Appwrite-Project":PROJECT_ID
+            }
+
+        });
+
+        const result = await response.json();
+
+        if(!response.ok){
+
+            console.error(result);
+
+            throw new Error(
+                result.message || "Erreur lors du chargement"
+            );
+        }
+
+        tickets = result.rows || [];
+
+        afficherTickets();
+
+        calculerStats();
+
+    }catch(error){
+
+        console.error(error);
+
+        afficherMessage(
+            "Impossible de charger les tickets : " +
+            error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+/* ==============================
+   AFFICHER LES TICKETS
+============================== */
+
+function afficherTickets(){
+
+    const tbody =
+        document.getElementById("ticketsTable");
+
+    tbody.innerHTML = "";
+
+    const recherche =
+        document
+        .getElementById("recherche")
+        .value
+        .toLowerCase();
+
+    const filtre =
+        document.getElementById("filtreStatut").value;
+
+
+    const liste = tickets.filter(ticket => {
+
+        const evenement =
+            ticket.evenement || "";
+
+        const type =
+            ticket.type || "";
+
+        const statut =
+            ticket.statut || "";
+
+        const correspondRecherche =
+            evenement.toLowerCase().includes(recherche) ||
+            type.toLowerCase().includes(recherche);
+
+        const correspondStatut =
+            !filtre || statut === filtre;
+
+        return correspondRecherche &&
+               correspondStatut;
+
+    });
+
+
+    if(liste.length === 0){
+
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" style="text-align:center;padding:30px;">
+                    Aucun ticket trouvé.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+
+    liste.forEach(ticket => {
+
+        const quantite =
+            Number(ticket.quantite || 0);
+
+        const vendus =
+            Number(ticket.vendus || 0);
+
+        const statut =
+            ticket.statut || "ouvert";
+
+
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+
+            <td>${ticket.evenement || "-"}</td>
+
+            <td>${ticket.type || "-"}</td>
+
+            <td>
+                ${Number(ticket.prix || 0).toLocaleString("fr-FR")}
+                FCFA
+            </td>
+
+            <td>${quantite}</td>
+
+            <td>${vendus}</td>
+
+            <td>
+
+                <span class="badge ${
+                    statut === "ouvert"
+                    ? "badge-open"
+                    : "badge-closed"
+                }">
+
+                    ${statut}
+
+                </span>
+
+            </td>
+
+            <td>
+
+                <button
+                    class="btn-secondary"
+                    onclick="modifierTicket('${ticket.$id}')">
+                    Modifier
+                </button>
+
+                <button
+                    class="btn-danger"
+                    onclick="supprimerTicket('${ticket.$id}')">
+                    Supprimer
+                </button>
+
+            </td>
+        `;
+
+        tbody.appendChild(tr);
+
+    });
+
+}
+
+
+/* ==============================
+   STATISTIQUES
+============================== */
+
+function calculerStats(){
+
+    let stock = 0;
+
+    let vendus = 0;
+
+    let recettes = 0;
+
+
+    tickets.forEach(ticket => {
+
+        const quantite =
+            Number(ticket.quantite || 0);
+
+        const nombreVendus =
+            Number(ticket.vendus || 0);
+
+        const prix =
+            Number(ticket.prix || 0);
+
+        stock += quantite;
+
+        vendus += nombreVendus;
+
+        recettes += nombreVendus * prix;
+
+    });
+
+
+    document.getElementById("totalTypes")
+        .textContent = tickets.length;
+
+    document.getElementById("totalStock")
+        .textContent = stock;
+
+    document.getElementById("totalVendus")
+        .textContent = vendus;
+
+    document.getElementById("totalRecettes")
+        .textContent =
+        recettes.toLocaleString("fr-FR") +
+        " FCFA";
+
+}
+
+
+/* ==============================
+   MODAL
+============================== */
+
+function ouvrirModal(){
+
+    ticketEnCours = null;
+
+    document.getElementById("modalTitle")
+        .textContent = "Nouveau ticket";
+
+    document.getElementById("evenement").value = "";
+
+    document.getElementById("type").value =
+        "Standard";
+
+    document.getElementById("prix").value = "";
+
+    document.getElementById("quantite").value = "";
+
+    document.getElementById("vendus").value = "0";
+
+    document.getElementById("statut").value =
+        "ouvert";
+
+    document.getElementById("ticketModal")
+        .style.display = "flex";
+
+}
+
+
+function fermerModal(){
+
+    document.getElementById("ticketModal")
+        .style.display = "none";
+
+}
+
+
+/* ==============================
+   ENREGISTRER
+============================== */
+
+async function enregistrerTicket(){
+
+    const evenement =
+        document.getElementById("evenement")
+        .value.trim();
+
+    const type =
+        document.getElementById("type").value;
+
+    const prix =
+        document.getElementById("prix").value;
+
+    const quantite =
+        document.getElementById("quantite").value;
+
+    const vendus =
+        document.getElementById("vendus").value;
+
+    const statut =
+        document.getElementById("statut").value;
+
+
+    if(!evenement || !prix || !quantite){
+
+        afficherMessage(
+            "Veuillez remplir les champs obligatoires.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const data = {
+
+        evenement: evenement,
+
+        type: type,
+
+        prix: String(prix),
+
+        quantite: String(quantite),
+
+        vendus: String(vendus || 0),
+
+        statut: statut,
+
+        createurId: "admin"
+
+    };
+
+
+    try{
+
+        let response;
+
+
+        /* NOUVEAU */
+
+        if(!ticketEnCours){
+
+            response = await fetch(BASE_URL, {
+
+                method:"POST",
+
+                credentials:"include",
+
+                headers:{
+                    "Content-Type":"application/json",
+                    "Accept":"application/json",
+                    "X-Appwrite-Project":PROJECT_ID
+                },
+
+                body:JSON.stringify({
+
+                    rowId:
+                        "ticket-" +
+                        Date.now(),
+
+                    data:data
+
+                })
+
+            });
+
+        }
+
+
+        /* MODIFICATION */
+
+        else{
+
+            response = await fetch(
+
+                BASE_URL +
+                "/" +
+                encodeURIComponent(ticketEnCours),
+
+                {
+
+                    method:"PATCH",
+
+                    credentials:"include",
+
+                    headers:{
+                        "Content-Type":"application/json",
+                        "Accept":"application/json",
+                        "X-Appwrite-Project":PROJECT_ID
+                    },
+
+                    body:JSON.stringify({
+                        data:data
+                    })
+
+                }
+
+            );
+
+        }
+
+
+        const result =
+            await response.json();
+
+
+        if(!response.ok){
+
+            console.error(result);
+
+            throw new Error(
+                result.message ||
+                "Erreur lors de l'enregistrement"
+            );
+
+        }
+
+
+        fermerModal();
+
+        afficherMessage(
+            ticketEnCours
+            ? "Ticket modifié avec succès."
+            : "Ticket créé avec succès.",
+            "success"
+        );
+
+
+        await chargerTickets();
+
+
+    }catch(error){
+
+        console.error(error);
+
+        afficherMessage(
+            error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+/* ==============================
+   MODIFIER
+============================== */
+
+function modifierTicket(id){
+
+    const ticket =
+        tickets.find(
+            t => t.$id === id
+        );
+
+    if(!ticket) return;
+
+
+    ticketEnCours = id;
+
+
+    document.getElementById("modalTitle")
+        .textContent = "Modifier le ticket";
+
+
+    document.getElementById("evenement").value =
+        ticket.evenement || "";
+
+
+    document.getElementById("type").value =
+        ticket.type || "Standard";
+
+
+    document.getElementById("prix").value =
+        ticket.prix || "";
+
+
+    document.getElementById("quantite").value =
+        ticket.quantite || "";
+
+
+    document.getElementById("vendus").value =
+        ticket.vendus || "0";
+
+
+    document.getElementById("statut").value =
+        ticket.statut || "ouvert";
+
+
+    document.getElementById("ticketModal")
+        .style.display = "flex";
+
+}
+
+
+/* ==============================
+   SUPPRIMER
+============================== */
+
+async function supprimerTicket(id){
+
+    if(!confirm(
+        "Voulez-vous vraiment supprimer ce ticket ?"
+    )) return;
+
+
+    try{
+
+        const response = await fetch(
+
+            BASE_URL +
+            "/" +
+            encodeURIComponent(id),
+
+            {
+
+                method:"DELETE",
+
+                credentials:"include",
+
+                headers:{
+                    "Accept":"application/json",
+                    "X-Appwrite-Project":PROJECT_ID
+                }
+
+            }
+
+        );
+
+
+        if(!response.ok){
+
+            const result =
+                await response.json();
+
+            throw new Error(
+                result.message ||
+                "Erreur lors de la suppression"
+            );
+
+        }
+
+
+        afficherMessage(
+            "Ticket supprimé avec succès.",
+            "success"
+        );
+
+
+        await chargerTickets();
+
+
+    }catch(error){
+
+        console.error(error);
+
+        afficherMessage(
+            error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+/* ==============================
+   DÉMARRAGE
+============================== */
+
+chargerTickets();
+
+</script>
+
+<script src="admin-guard.js"></script>
+</body>
+</html>

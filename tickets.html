@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Tickets - AJADD HUB</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f5f5f5;
+            color: #222;
+        }
+
+        header {
+            background: #071a3d;
+            color: white;
+            padding: 22px;
+            text-align: center;
+        }
+
+        header h1 {
+            color: #d4af37;
+            font-size: 32px;
+        }
+
+        header p {
+            margin-top: 8px;
+        }
+
+        .back {
+            display: inline-block;
+            margin: 20px;
+            color: #071a3d;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 10px 20px 50px;
+        }
+
+        .title {
+            text-align: center;
+            margin: 20px 0 35px;
+        }
+
+        .title h2 {
+            color: #071a3d;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .title p {
+            color: #666;
+        }
+
+        .tickets {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .ticket {
+            background: white;
+            padding: 30px 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 18px rgba(0, 0, 0, 0.10);
+            text-align: center;
+        }
+
+        .ticket h3 {
+            color: #071a3d;
+            font-size: 23px;
+            margin-bottom: 15px;
+        }
+
+        .price {
+            color: #d4af37;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .ticket p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .buy-btn {
+            border: none;
+            background: #071a3d;
+            color: white;
+            padding: 13px 25px;
+            border-radius: 7px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .buy-btn:hover {
+            background: #0d2a5c;
+        }
+
+        .message {
+            display: none;
+            margin: 30px auto 0;
+            max-width: 600px;
+            padding: 18px;
+            background: #e8f5e9;
+            color: #1b5e20;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        footer {
+            background: #071a3d;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        footer span {
+            color: #d4af37;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>AJADD <span>HUB</span></h1>
+        <p>Billetterie officielle</p>
+    </header>
+
+    <a href="index.html" class="back">
+        ← Retour à l'accueil
+    </a>
+
+    <main class="container">
+
+        <div class="title">
+            <h2>🎫 Achetez votre ticket</h2>
+
+            <p>
+                Choisissez votre catégorie de ticket
+                pour participer à nos événements.
+            </p>
+        </div>
+
+        <div class="tickets">
+
+            <div class="ticket">
+                <h3>Standard</h3>
+
+                <div class="price">
+                    3 000 FCFA
+                </div>
+
+                <p>
+                    Accès standard à l'événement.
+                </p>
+
+                <button
+                    class="buy-btn"
+                    onclick="acheter('Standard', 3000)">
+                    Acheter
+                </button>
+            </div>
+
+
+            <div class="ticket">
+                <h3>Réservation</h3>
+
+                <div class="price">
+                    5 000 FCFA
+                </div>
+
+                <p>
+                    Accès avec place réservée.
+                </p>
+
+                <button
+                    class="buy-btn"
+                    onclick="acheter('Réservation', 5000)">
+                    Acheter
+                </button>
+            </div>
+
+
+            <div class="ticket">
+                <h3>VIP</h3>
+
+                <div class="price">
+                    10 000 FCFA
+                </div>
+
+                <p>
+                    Accès VIP et avantages
+                    privilégiés.
+                </p>
+
+                <button
+                    class="buy-btn"
+                    onclick="acheter('VIP', 10000)">
+                    Acheter
+                </button>
+            </div>
+
+        </div>
+
+        <div class="message" id="message"></div>
+
+    </main>
+
+    <footer>
+        <p>
+            © 2026 <span>AJADD HUB</span> — Tous droits réservés.
+        </p>
+    </footer>
+
+
+    <script>
+
+        function acheter(type, prix) {
+
+            const message =
+                document.getElementById("message");
+
+            message.innerHTML =
+                "Vous avez sélectionné le ticket " +
+                type +
+                " à " +
+                prix.toLocaleString("fr-FR") +
+                " FCFA.";
+
+            message.style.display = "block";
+
+            window.scrollTo({
+                top: document.body.scrollHeight,
+                behavior: "smooth"
+            });
+        }
+
+    </script>
+
+</body>
+</html>

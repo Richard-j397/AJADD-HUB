@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AJADD HUB - Tableau de bord</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#f5f7fb;
+    color:#1f2937;
+}
+
+/* HEADER */
+
+header{
+    background:#0b1f3a;
+    color:white;
+    padding:20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+}
+
+header h1{
+    margin:0;
+}
+
+.user{
+    text-align:right;
+}
+
+.user strong{
+    display:block;
+}
+
+/* CONTAINER */
+
+.container{
+    max-width:1200px;
+    margin:30px auto;
+    padding:0 15px;
+}
+
+/* BIENVENUE */
+
+.welcome{
+    background:white;
+    padding:25px;
+    border-radius:14px;
+    box-shadow:0 3px 12px rgba(0,0,0,.08);
+    margin-bottom:25px;
+}
+
+.welcome h2{
+    margin-top:0;
+    color:#0b1f3a;
+}
+
+/* STATS */
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+    margin-bottom:25px;
+}
+
+.stat{
+    background:white;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 3px 12px rgba(0,0,0,.08);
+}
+
+.stat span{
+    color:#6b7280;
+}
+
+.stat strong{
+    display:block;
+    font-size:28px;
+    margin-top:8px;
+    color:#0b1f3a;
+}
+
+/* MENU */
+
+.section-title{
+    color:#0b1f3a;
+    margin-bottom:15px;
+}
+
+.menu{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
+}
+
+.card{
+    background:white;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 3px 12px rgba(0,0,0,.08);
+    transition:.2s;
+}
+
+.card:hover{
+    transform:translateY(-3px);
+}
+
+.card h3{
+    margin-top:0;
+    color:#0b1f3a;
+}
+
+.card p{
+    color:#6b7280;
+    min-height:40px;
+}
+
+.card a{
+    display:inline-block;
+    text-decoration:none;
+    background:#0b1f3a;
+    color:white;
+    padding:10px 15px;
+    border-radius:7px;
+    font-weight:bold;
+}
+
+.card a.gold{
+    background:#c9a227;
+}
+
+.card a.green{
+    background:#15803d;
+}
+
+.card a.red{
+    background:#dc2626;
+}
+
+/* DÉCONNEXION */
+
+.logout{
+    margin-top:30px;
+    text-align:center;
+}
+
+.logout button{
+    border:0;
+    background:#dc2626;
+    color:white;
+    padding:12px 22px;
+    border-radius:8px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+/* FOOTER */
+
+footer{
+    margin-top:40px;
+    padding:20px;
+    text-align:center;
+    color:#6b7280;
+}
+
+/* MOBILE */
+
+@media(max-width:900px){
+
+    .stats{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .menu{
+        grid-template-columns:1fr 1fr;
+    }
+
+}
+
+@media(max-width:600px){
+
+    header{
+        flex-direction:column;
+        align-items:flex-start;
+    }
+
+    .user{
+        text-align:left;
+    }
+
+    .stats{
+        grid-template-columns:1fr;
+    }
+
+    .menu{
+        grid-template-columns:1fr;
+    }
+
+}
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+    <div>
+        <h1>AJADD HUB</h1>
+        <div>Tableau de bord administrateur</div>
+    </div>
+
+    <div class="user">
+
+        <span>Compte connecté</span>
+
+        <strong id="nomUtilisateur">
+            Chargement...
+        </strong>
+
+    </div>
+
+</header>
+
+
+<div class="container">
+
+    <!-- BIENVENUE -->
+
+    <div class="welcome">
+
+        <h2>
+            Bienvenue sur AJADD HUB
+        </h2>
+
+        <p>
+            Gérez depuis cet espace les inscriptions,
+            votes, candidatures, événements, billets,
+            paiements, communications et contenus
+            de la plateforme AJADD.
+        </p>
+
+    </div>
+
+
+    <!-- STATISTIQUES -->
+
+    <div class="stats">
+
+        <div class="stat">
+
+            <span>
+                Inscriptions
+            </span>
+
+            <strong id="statInscriptions">
+                —
+            </strong>
+
+        </div>
+
+
+        <div class="stat">
+
+            <span>
+                Candidatures
+            </span>
+
+            <strong id="statCandidatures">
+                —
+            </strong>
+
+        </div>
+
+
+        <div class="stat">
+
+            <span>
+                Événements
+            </span>
+
+            <strong id="statEvenements">
+                —
+            </strong>
+
+        </div>
+
+
+        <div class="stat">
+
+            <span>
+                Votes
+            </span>
+
+            <strong id="statVotes">
+                —
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <h2 class="section-title">
+        Administration
+    </h2>
+
+
+    <!-- MENU -->
+
+    <div class="menu">
+
+
+        <!-- INSCRIPTIONS -->
+
+        <div class="card">
+
+            <h3>Inscriptions</h3>
+
+            <p>
+                Créer et gérer les formulaires
+                d'inscription.
+            </p>
+
+            <a href="admin-inscription.html">
+                Ouvrir
+            </a>
+
+        </div>
+
+
+        <!-- CANDIDATURES -->
+
+        <div class="card">
+
+            <h3>Candidatures</h3>
+
+            <p>
+                Consulter, valider ou rejeter
+                les candidatures.
+            </p>
+
+            <a
+                href="admin-candidatures.html"
+                class="gold"
+            >
+                Ouvrir
+            </a>
+
+        </div>
+
+
+        <!-- VOTES -->
+
+        <div class="card">
+
+            <h3>Votes</h3>
+
+            <p>
+                Gérer les campagnes de vote
+                de la plateforme.
+            </p>
+
+            <a
+                href="vote.html"
+                class="green"
+            >
+                Ouvrir
+            </a>
+
+        </div>
+
+
+        <!-- ÉVÉNEMENTS -->
+
+        <div class="card">
+
+            <h3>Événements</h3>
+
+            <p>
+                Créer et gérer les événements
+                AJADD.
+            </p>
+
+            <a
+                href="admin-evenements.html"
+            >
+                Ouvrir
+            </a>
+
+        </div>
+
+
+        <!-- BILLETS -->
+
+        <div class="card">
+
+            <h3>Billets</h3>
+
+            <p>
+                Gérer les billets et les ventes
+                de tickets.
+            </p>
+
+            <a
+                href="admin-ticker.html"
+                class="gold"
+            >
+                Ouvrir
+            </a>
+
+        </div>
+
+
+        <!-- PAIEMENTS -->
+
+        <div class="card">
+
+            <h3>Paiements</h3>
+
+            <p>
+                Consulter et gérer les paiements
+                enregistrés.
+            </p>
+
+            <a
+                href="admin-paiements.html"
+            >
+                Ouvrir
+            </a>
+
+        </div>
+
+
+        <!-- COMMUNICATION -->
+
+        <div class="card">
+
+            <h3>Communication</h3>
+
+            <p>
+                Publier les communications
+                officielles.
+            </p>
+
+            <a
+                href="admin-communication.html"
+                class="gold"
+            >
+                Ouvrir
+            </a>
+
+        </div>
+
+
+        <!-- CONTENU -->
+
+        <div class="card">
+
+            <h3>Contenus</h3>
+
+            <p>
+                Gérer les contenus de la
+                plateforme.
+            </p>
+
+            <a
+                href="admin-contenu.html"
+            >
+                Ouvrir
+            </a>
+
+        </div>
+
+
+        <!-- RAPPORTS -->
+
+        <div class="card">
+
+            <h3>Rapports</h3>
+
+            <p>
+                Consulter les statistiques
+                générales AJADD HUB.
+            </p>
+
+            <a
+                href="admin-rapports.html"
+                class="green"
+            >
+                Ouvrir
+            </a>
+
+        </div>
+
+
+        <!-- UTILISATEURS -->
+
+        <div class="card">
+
+            <h3>Utilisateurs</h3>
+
+            <p>
+                Gérer les utilisateurs
+                de la plateforme.
+            </p>
+
+            <a
+                href="admin-utilisateurs.html"
+            >
+                Ouvrir
+            </a>
+
+        </div>
+
+
+        <!-- SÉCURITÉ -->
+
+        <div class="card">
+
+            <h3>Sécurité</h3>
+
+            <p>
+                Vérifier l'état de la session
+                et de la sécurité.
+            </p>
+
+            <a
+                href="admin-securite.html"
+                class="gold"
+            >
+                Ouvrir
+            </a>
+
+        </div>
+
+
+        <!-- PARAMÈTRES -->
+
+        <div class="card">
+
+            <h3>Paramètres</h3>
+
+            <p>
+                Configurer les paramètres
+                de AJADD HUB.
+            </p>
+
+            <a
+                href="admin-parametre.html"
+            >
+                Ouvrir
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- DÉCONNEXION -->
+
+    <div class="logout">
+
+        <button
+            onclick="deconnecter()"
+        >
+            Se déconnecter
+        </button>
+
+    </div>
+
+</div>
+
+
+<footer>
+
+    © 2026 AJADD HUB —
+    AJADD TOGO / AJADD International
+
+</footer>
+
+
+<script>
+
+/* =========================================
+   APPWRITE
+========================================= */
+
+const PROJECT_ID =
+    "6ac62abb001c74bb8de5";
+
+
+const BASE_URL =
+    "https://cloud.appwrite.io/v1";
+
+
+/* =========================================
+   AFFICHER UTILISATEUR
+========================================= */
+
+async function chargerUtilisateur(){
+
+    try{
+
+        const response =
+            await fetch(
+                BASE_URL + "/account",
+                {
+                    method:"GET",
+
+                    credentials:"include",
+
+                    headers:{
+                        "Accept":
+                            "application/json",
+
+                        "X-Appwrite-Project":
+                            PROJECT_ID
+                    }
+                }
+            );
+
+
+        if(!response.ok){
+
+            throw new Error(
+                "Session non valide"
+            );
+
+        }
+
+
+        const user =
+            await response.json();
+
+
+        document.getElementById(
+            "nomUtilisateur"
+        ).textContent =
+            user.name ||
+            user.email ||
+            "Utilisateur";
+
+
+    }catch(error){
+
+        document.getElementById(
+            "nomUtilisateur"
+        ).textContent =
+            "Session non connectée";
+
+    }
+
+}
+
+
+/* =========================================
+   STATISTIQUES
+========================================= */
+
+async function chargerStatistiques(){
+
+    const DATABASE_ID =
+        "6ac62bca002f025e7f1b";
+
+
+    const tables = {
+
+        inscriptions:
+            "6ac6d3d5002772ea9246",
+
+        candidatures:
+            "6ac6de7c002ae499f886",
+
+        evenements:
+            "6ac7059f000f4918f6d2",
+
+        votes:
+            "6ac68b64000cbb48ffe6"
+
+    };
+
+
+    for(
+        const [nom,tableId]
+        of Object.entries(tables)
+    ){
+
+        try{
+
+            const url =
+                BASE_URL +
+                "/tablesdb/" +
+                DATABASE_ID +
+                "/tables/" +
+                tableId +
+                "/rows";
+
+
+            const response =
+                await fetch(
+                    url,
+                    {
+                        method:"GET",
+
+                        credentials:"include",
+
+                        headers:{
+                            "Accept":
+                                "application/json",
+
+                            "X-Appwrite-Project":
+                                PROJECT_ID
+                        }
+                    }
+                );
+
+
+            if(!response.ok){
+
+                throw new Error(
+                    "Erreur"
+                );
+
+            }
+
+
+            const data =
+                await response.json();
+
+
+            const total =
+                Array.isArray(data.rows)
+                    ? data.rows.length
+                    : 0;
+
+
+            document.getElementById(
+                "stat" +
+                nom.charAt(0).toUpperCase() +
+                nom.slice(1)
+            ).textContent =
+                total;
+
+
+        }catch(error){
+
+            document.getElementById(
+                "stat" +
+                nom.charAt(0).toUpperCase() +
+                nom.slice(1)
+            ).textContent =
+                "—";
+
+        }
+
+    }
+
+}
+
+
+/* =========================================
+   DÉCONNEXION
+========================================= */
+
+async function deconnecter(){
+
+    const confirmation =
+        confirm(
+            "Voulez-vous vraiment vous déconnecter ?"
+        );
+
+
+    if(!confirmation){
+
+        return;
+
+    }
+
+
+    try{
+
+        await fetch(
+            BASE_URL +
+            "/account/sessions/current",
+            {
+                method:"DELETE",
+
+                credentials:"include",
+
+                headers:{
+                    "Accept":
+                        "application/json",
+
+                    "X-Appwrite-Project":
+                        PROJECT_ID
+                }
+            }
+        );
+
+    }catch(error){
+
+        console.error(error);
+
+    }
+
+
+    window.location.href =
+        "Connexion.html";
+
+}
+
+
+/* =========================================
+   DÉMARRAGE
+========================================= */
+
+chargerUtilisateur();
+
+chargerStatistiques();
+
+</script>
+
+<script src="admin-guard.js"></script>
+</body>
+</html>

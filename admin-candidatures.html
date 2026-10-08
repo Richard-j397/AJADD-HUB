@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AJADD HUB — Candidatures</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f5f6f8;
+    color: #222;
+}
+
+header {
+    background: #07152d;
+    color: white;
+    padding: 22px;
+}
+
+header h1 {
+    margin: 0;
+    color: #d4af37;
+    font-size: 24px;
+}
+
+header p {
+    margin: 6px 0 0;
+    color: #ddd;
+}
+
+.container {
+    width: 95%;
+    max-width: 1400px;
+    margin: 30px auto;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.topbar h2 {
+    margin: 0;
+    color: #07152d;
+}
+
+button {
+    border: none;
+    cursor: pointer;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+.btn-retour {
+    background: #07152d;
+    color: white;
+}
+
+.btn-refresh {
+    background: #d4af37;
+    color: #07152d;
+}
+
+.stats {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+}
+
+.stat {
+    background: white;
+    padding: 18px;
+    border-radius: 10px;
+    box-shadow: 0 3px 12px rgba(0,0,0,.08);
+    min-width: 160px;
+}
+
+.stat strong {
+    display: block;
+    font-size: 25px;
+    color: #07152d;
+}
+
+.stat span {
+    color: #777;
+    font-size: 14px;
+}
+
+.table-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 3px 15px rgba(0,0,0,.08);
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 1100px;
+}
+
+th {
+    background: #07152d;
+    color: white;
+    padding: 14px;
+    text-align: left;
+}
+
+td {
+    padding: 14px;
+    border-bottom: 1px solid #eee;
+}
+
+tr:hover {
+    background: #fafafa;
+}
+
+.badge {
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.attente {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.validee {
+    background: #d4edda;
+    color: #155724;
+}
+
+.rejetee {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.btn-voir {
+    background: #07152d;
+    color: white;
+}
+
+.btn-valider {
+    background: #198754;
+    color: white;
+}
+
+.btn-rejeter {
+    background: #dc3545;
+    color: white;
+}
+
+.btn-supprimer {
+    background: #555;
+    color: white;
+}
+
+#message {
+    text-align: center;
+    padding: 25px;
+    color: #777;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.65);
+    z-index: 1000;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.modal-content {
+    background: white;
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 25px;
+    border-radius: 12px;
+}
+
+.modal-content h2 {
+    color: #07152d;
+    margin-top: 0;
+}
+
+.info {
+    margin: 10px 0;
+    padding: 10px;
+    background: #f5f6f8;
+    border-radius: 6px;
+}
+
+.info strong {
+    color: #07152d;
+}
+
+.close {
+    float: right;
+    background: #dc3545;
+    color: white;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>AJADD HUB</h1>
+    <p>Administration — Gestion des candidatures</p>
+</header>
+
+<div class="container">
+
+    <div class="topbar">
+        <h2>Liste des candidatures</h2>
+
+        <div>
+            <button class="btn-refresh" onclick="chargerCandidatures()">
+                ↻ ACTUALISER
+            </button>
+
+            <button class="btn-retour" onclick="history.back()">
+                ← RETOUR
+            </button>
+        </div>
+    </div>
+
+    <div class="stats">
+
+        <div class="stat">
+            <strong id="total">0</strong>
+            <span>Total candidatures</span>
+        </div>
+
+        <div class="stat">
+            <strong id="attente">0</strong>
+            <span>En attente</span>
+        </div>
+
+        <div class="stat">
+            <strong id="validees">0</strong>
+            <span>Validées</span>
+        </div>
+
+        <div class="stat">
+            <strong id="rejetees">0</strong>
+            <span>Rejetées</span>
+        </div>
+
+    </div>
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Téléphone</th>
+                    <th>Email</th>
+                    <th>Ville</th>
+                    <th>Sexe</th>
+                    <th>Taille</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody id="listeCandidatures"></tbody>
+
+        </table>
+
+        <div id="message">
+            Chargement des candidatures...
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- MODAL -->
+
+<div class="modal" id="modal">
+
+    <div class="modal-content">
+
+        <button class="close" onclick="fermerModal()">
+            ✕ Fermer
+        </button>
+
+        <h2>Détails de la candidature</h2>
+
+        <div id="details"></div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const PROJECT_ID = "6ac62abb001c74bb8de5";
+const DATABASE_ID = "6ac62bca002f025e7f1b";
+const TABLE_ID = "6ac6de7c002ae499f886";
+
+
+const URL =
+    "https://cloud.appwrite.io/v1/tablesdb/" +
+    DATABASE_ID +
+    "/tables/" +
+    TABLE_ID +
+    "/rows";
+
+
+async function chargerCandidatures() {
+
+    const tbody = document.getElementById("listeCandidatures");
+    const message = document.getElementById("message");
+
+    tbody.innerHTML = "";
+
+    message.style.display = "block";
+    message.textContent = "Chargement...";
+
+    try {
+
+        const response = await fetch(
+            URL + "?limit=100",
+            {
+                method: "GET",
+
+                credentials: "include",
+
+                headers: {
+                    "Accept": "application/json",
+                    "X-Appwrite-Project": PROJECT_ID
+                }
+            }
+        );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Erreur Appwrite : " +
+                response.status
+            );
+
+        }
+
+
+        const resultat = await response.json();
+
+
+        const candidatures = resultat.rows || [];
+
+
+        document.getElementById("total").textContent =
+            candidatures.length;
+
+
+        let attente = 0;
+        let validees = 0;
+        let rejetees = 0;
+
+
+        if (candidatures.length === 0) {
+
+            message.textContent =
+                "Aucune candidature enregistrée.";
+
+            return;
+        }
+
+
+        candidatures.forEach(function(candidature) {
+
+            const statut =
+                candidature.statut || "en_attente";
+
+
+            if (statut === "en_attente") {
+                attente++;
+            }
+
+            if (statut === "validee") {
+                validees++;
+            }
+
+            if (statut === "rejetee") {
+                rejetees++;
+            }
+
+
+            const ligne =
+                document.createElement("tr");
+
+
+            ligne.innerHTML = `
+
+                <td>
+                    <strong>
+                        ${echapper(candidature.nom || "Non renseigné")}
+                    </strong>
+                </td>
+
+                <td>
+                    ${echapper(candidature.telephone || "Non renseigné")}
+                </td>
+
+                <td>
+                    ${echapper(candidature.email || "Non renseigné")}
+                </td>
+
+                <td>
+                    ${echapper(candidature.ville || "Non renseigné")}
+                </td>
+
+                <td>
+                    ${echapper(candidature.sexe || "Non renseigné")}
+                </td>
+
+                <td>
+                    ${echapper(candidature.taille || "Non renseigné")}
+                </td>
+
+                <td>
+                    ${afficherStatut(statut)}
+                </td>
+
+                <td>
+
+                    <div class="actions">
+
+                        <button
+                            class="btn-voir"
+                            onclick='voirCandidature(${JSON.stringify(candidature)})'>
+                            Voir
+                        </button>
+
+                        <button
+                            class="btn-valider"
+                            onclick="changerStatut('${candidature.$id}', 'validee')">
+                            ✓
+                        </button>
+
+                        <button
+                            class="btn-rejeter"
+                            onclick="changerStatut('${candidature.$id}', 'rejetee')">
+                            ✕
+                        </button>
+
+                        <button
+                            class="btn-supprimer"
+                            onclick="supprimerCandidature('${candidature.$id}')">
+                            Supprimer
+                        </button>
+
+                    </div>
+
+                </td>
+
+            `;
+
+
+            tbody.appendChild(ligne);
+
+        });
+
+
+        document.getElementById("attente").textContent =
+            attente;
+
+        document.getElementById("validees").textContent =
+            validees;
+
+        document.getElementById("rejetees").textContent =
+            rejetees;
+
+
+        message.style.display = "none";
+
+
+    } catch (erreur) {
+
+        message.style.display = "block";
+
+        message.textContent =
+            "Impossible de charger les candidatures : " +
+            erreur.message;
+
+    }
+
+}
+
+
+/* AFFICHER LE STATUT */
+
+function afficherStatut(statut) {
+
+    if (statut === "validee") {
+
+        return `
+            <span class="badge validee">
+                VALIDÉE
+            </span>
+        `;
+
+    }
+
+
+    if (statut === "rejetee") {
+
+        return `
+            <span class="badge rejetee">
+                REJETÉE
+            </span>
+        `;
+
+    }
+
+
+    return `
+        <span class="badge attente">
+            EN ATTENTE
+        </span>
+    `;
+
+}
+
+
+/* VOIR CANDIDATURE */
+
+function voirCandidature(candidature) {
+
+    const details =
+        document.getElementById("details");
+
+
+    details.innerHTML = `
+
+        <div class="info">
+            <strong>Nom :</strong>
+            ${echapper(candidature.nom)}
+        </div>
+
+        <div class="info">
+            <strong>Téléphone :</strong>
+            ${echapper(candidature.telephone)}
+        </div>
+
+        <div class="info">
+            <strong>Email :</strong>
+            ${echapper(candidature.email)}
+        </div>
+
+        <div class="info">
+            <strong>Date de naissance :</strong>
+            ${echapper(candidature.dateNaissance)}
+        </div>
+
+        <div class="info">
+            <strong>Ville :</strong>
+            ${echapper(candidature.ville)}
+        </div>
+
+        <div class="info">
+            <strong>Sexe :</strong>
+            ${echapper(candidature.sexe)}
+        </div>
+
+        <div class="info">
+            <strong>Taille :</strong>
+            ${echapper(candidature.taille)}
+        </div>
+
+        <div class="info">
+            <strong>Photo :</strong>
+            ${echapper(candidature.photo)}
+        </div>
+
+        <div class="info">
+            <strong>Pièce :</strong>
+            ${echapper(candidature.piece)}
+        </div>
+
+        <div class="info">
+            <strong>Projet :</strong>
+            ${echapper(candidature.projet)}
+        </div>
+
+        <div class="info">
+            <strong>Statut :</strong>
+            ${echapper(candidature.statut || "en_attente")}
+        </div>
+
+    `;
+
+
+    document.getElementById("modal").style.display =
+        "block";
+
+}
+
+
+/* FERMER MODAL */
+
+function fermerModal() {
+
+    document.getElementById("modal").style.display =
+        "none";
+
+}
+
+
+/* CHANGER STATUT */
+
+async function changerStatut(id, nouveauStatut) {
+
+    const confirmation =
+        confirm(
+            nouveauStatut === "validee"
+                ? "Valider cette candidature ?"
+                : "Rejeter cette candidature ?"
+        );
+
+
+    if (!confirmation) {
+        return;
+    }
+
+
+    const url =
+        URL + "/" + encodeURIComponent(id);
+
+
+    try {
+
+        const response = await fetch(
+            url,
+            {
+                method: "PATCH",
+
+                credentials: "include",
+
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "X-Appwrite-Project": PROJECT_ID
+                },
+
+                body: JSON.stringify({
+                    data: {
+                        statut: nouveauStatut
+                    }
+                })
+            }
+        );
+
+
+        if (!response.ok) {
+
+            const erreur =
+                await response.text();
+
+            throw new Error(erreur);
+
+        }
+
+
+        alert(
+            nouveauStatut === "validee"
+                ? "Candidature validée."
+                : "Candidature rejetée."
+        );
+
+
+        chargerCandidatures();
+
+
+    } catch (erreur) {
+
+        alert(
+            "Erreur : " +
+            erreur.message
+        );
+
+    }
+
+}
+
+
+/* SUPPRIMER */
+
+async function supprimerCandidature(id) {
+
+    if (
+        !confirm(
+            "Voulez-vous vraiment supprimer cette candidature ?"
+        )
+    ) {
+        return;
+    }
+
+
+    try {
+
+        const response = await fetch(
+            URL + "/" + encodeURIComponent(id),
+            {
+                method: "DELETE",
+
+                credentials: "include",
+
+                headers: {
+                    "Accept": "application/json",
+                    "X-Appwrite-Project": PROJECT_ID
+                }
+            }
+        );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Suppression impossible."
+            );
+
+        }
+
+
+        alert(
+            "Candidature supprimée."
+        );
+
+
+        chargerCandidatures();
+
+
+    } catch (erreur) {
+
+        alert(
+            "Erreur : " +
+            erreur.message
+        );
+
+    }
+
+}
+
+
+/* PROTECTION CONTRE LE HTML */
+
+function echapper(valeur) {
+
+    if (
+        valeur === null ||
+        valeur === undefined ||
+        valeur === ""
+    ) {
+        return "Non renseigné";
+    }
+
+
+    return String(valeur)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+/* LANCEMENT */
+
+chargerCandidatures();
+
+</script>
+
+<script src="admin-guard.js"></script>
+</body>
+</html>

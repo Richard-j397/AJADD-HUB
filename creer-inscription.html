@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AJADD HUB - Créer une inscription</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f6f9;
+            color: #172033;
+        }
+
+        header {
+            background: #071a3d;
+            color: white;
+            padding: 20px 30px;
+        }
+
+        header h1 {
+            color: #d4af37;
+            font-size: 26px;
+        }
+
+        header p {
+            color: #ddd;
+            margin-top: 5px;
+            font-size: 13px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        .page-title {
+            margin-bottom: 25px;
+        }
+
+        .page-title h2 {
+            color: #071a3d;
+            margin-bottom: 8px;
+            font-size: 27px;
+        }
+
+        .page-title p {
+            color: #666;
+        }
+
+        .card {
+            background: white;
+            padding: 28px;
+            border-radius: 14px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            margin-bottom: 20px;
+        }
+
+        .card h3 {
+            color: #071a3d;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #d4af37;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 7px;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #d8d8d8;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            background: white;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            border-color: #d4af37;
+        }
+
+        textarea {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .checkboxes {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        .checkbox {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 13px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .checkbox input {
+            width: auto;
+        }
+
+        .checkbox label {
+            margin: 0;
+            font-weight: normal;
+        }
+
+        .info {
+            background: #eef3ff;
+            border-left: 4px solid #071a3d;
+            padding: 15px;
+            border-radius: 6px;
+            color: #344054;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            border: none;
+            padding: 13px 22px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .btn-cancel {
+            background: #e9ecef;
+            color: #333;
+        }
+
+        .btn-create {
+            background: #d4af37;
+            color: #071a3d;
+        }
+
+        .btn-create:hover {
+            background: #c49f2f;
+        }
+
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        @media (max-width: 650px) {
+
+            .row {
+                grid-template-columns: 1fr;
+            }
+
+            .checkboxes {
+                grid-template-columns: 1fr;
+            }
+
+            .buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            header {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+
+    <h1>AJADD HUB</h1>
+
+    <p>
+        Création d'un formulaire d'inscription
+    </p>
+
+</header>
+
+
+<main class="container">
+
+    <div class="page-title">
+
+        <h2>Nouvelle inscription</h2>
+
+        <p>
+            Créez un événement d'inscription pour permettre
+            au public de s'inscrire en ligne.
+        </p>
+
+    </div>
+
+
+    <!-- INFORMATIONS DE L'ÉVÉNEMENT -->
+
+    <div class="card">
+
+        <h3>1. Informations de l'événement</h3>
+
+
+        <div class="form-group">
+
+            <label for="nomEvenement">
+                Nom de l'événement *
+            </label>
+
+            <input
+                type="text"
+                id="nomEvenement"
+                placeholder="Exemple : Miss Forme Divine 2027"
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="description">
+                Description *
+            </label>
+
+            <textarea
+                id="description"
+                placeholder="Présentez votre événement..."
+            ></textarea>
+
+        </div>
+
+
+        <div class="row">
+
+            <div class="form-group">
+
+                <label for="dateDebut">
+                    Date de début
+                </label>
+
+                <input
+                    type="date"
+                    id="dateDebut"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="dateFin">
+                    Date limite d'inscription *
+                </label>
+
+                <input
+                    type="date"
+                    id="dateFin"
+                >
+
+            </div>
+
+        </div>
+
+
+        <div class="row">
+
+            <div class="form-group">
+
+                <label for="frais">
+                    Frais d'inscription
+                </label>
+
+                <input
+                    type="number"
+                    id="frais"
+                    min="0"
+                    placeholder="Exemple : 5000"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="statut">
+                    Statut
+                </label>
+
+                <select id="statut">
+
+                    <option value="ouvert">
+                        Ouvert
+                    </option>
+
+                    <option value="ferme">
+                        Fermé
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- INFORMATIONS DES CANDIDATS -->
+
+    <div class="card">
+
+        <h3>2. Informations demandées aux candidats</h3>
+
+        <div class="info">
+
+            Sélectionnez les informations que les participants
+            devront renseigner dans le formulaire public.
+
+        </div>
+
+
+        <div class="checkboxes">
+
+            <div class="checkbox">
+
+                <input
+                    type="checkbox"
+                    id="nom"
+                    checked
+                >
+
+                <label for="nom">
+                    Nom et prénom
+                </label>
+
+            </div>
+
+
+            <div class="checkbox">
+
+                <input
+                    type="checkbox"
+                    id="telephone"
+                    checked
+                >
+
+                <label for="telephone">
+                    Téléphone
+                </label>
+
+            </div>
+
+
+            <div class="checkbox">
+
+                <input
+                    type="checkbox"
+                    id="email"
+                    checked
+                >
+
+                <label for="email">
+                    Adresse e-mail
+                </label>
+
+            </div>
+
+
+            <div class="checkbox">
+
+                <input
+                    type="checkbox"
+                    id="dateNaissance"
+                >
+
+                <label for="dateNaissance">
+                    Date de naissance
+                </label>
+
+            </div>
+
+
+            <div class="checkbox">
+
+                <input
+                    type="checkbox"
+                    id="ville"
+                >
+
+                <label for="ville">
+                    Ville / Localité
+                </label>
+
+            </div>
+
+
+            <div class="checkbox">
+
+                <input
+                    type="checkbox"
+                    id="sexe"
+                >
+
+                <label for="sexe">
+                    Sexe
+                </label>
+
+            </div>
+
+
+            <div class="checkbox">
+
+                <input
+                    type="checkbox"
+                    id="taille"
+                >
+
+                <label for="taille">
+                    Taille
+                </label>
+
+            </div>
+
+
+            <div class="checkbox">
+
+                <input
+                    type="checkbox"
+                    id="photo"
+                >
+
+                <label for="photo">
+                    Photo
+                </label>
+
+            </div>
+
+
+            <div class="checkbox">
+
+                <input
+                    type="checkbox"
+                    id="piece"
+                >
+
+                <label for="piece">
+                    Pièce d'identité
+                </label>
+
+            </div>
+
+
+            <div class="checkbox">
+
+                <input
+                    type="checkbox"
+                    id="projet"
+                >
+
+                <label for="projet">
+                    Projet / Motivation
+                </label>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- BOUTONS -->
+
+    <div class="card">
+
+        <div class="buttons">
+
+            <button
+                class="btn btn-cancel"
+                onclick="annuler()"
+            >
+                ANNULER
+            </button>
+
+
+            <button
+                class="btn btn-create"
+                id="btnCreate"
+                onclick="creerFormulaire()"
+            >
+                CRÉER LE FORMULAIRE
+            </button>
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<script>
+
+/* ================================
+   CONFIGURATION APPWRITE
+================================ */
+
+const PROJECT_ID =
+    "6ac62abb001c74bb8de5";
+
+const DATABASE_ID =
+    "6ac62bca002f025e7f1b";
+
+const TABLE_ID =
+    "6ac6d3d5002772ea9246";
+
+
+/* ================================
+   CRÉATION DU FORMULAIRE
+================================ */
+
+async function creerFormulaire() {
+
+    const bouton =
+        document.getElementById("btnCreate");
+
+
+    const nomEvenement =
+        document
+        .getElementById("nomEvenement")
+        .value
+        .trim();
+
+
+    const description =
+        document
+        .getElementById("description")
+        .value
+        .trim();
+
+
+    const dateDebut =
+        document
+        .getElementById("dateDebut")
+        .value;
+
+
+    const dateFin =
+        document
+        .getElementById("dateFin")
+        .value;
+
+
+    const frais =
+        document
+        .getElementById("frais")
+        .value || "0";
+
+
+    const statut =
+        document
+        .getElementById("statut")
+        .value;
+
+
+    /* VALIDATION */
+
+    if (!nomEvenement) {
+
+        alert(
+            "Veuillez entrer le nom de l'événement."
+        );
+
+        return;
+    }
+
+
+    if (!description) {
+
+        alert(
+            "Veuillez entrer une description."
+        );
+
+        return;
+    }
+
+
+    if (!dateFin) {
+
+        alert(
+            "Veuillez choisir la date limite d'inscription."
+        );
+
+        return;
+    }
+
+
+    /* RÉCUPÉRATION DES CHAMPS */
+
+    const champs = {
+
+        nom:
+            document
+            .getElementById("nom")
+            .checked,
+
+        telephone:
+            document
+            .getElementById("telephone")
+            .checked,
+
+        email:
+            document
+            .getElementById("email")
+            .checked,
+
+        dateNaissance:
+            document
+            .getElementById("dateNaissance")
+            .checked,
+
+        ville:
+            document
+            .getElementById("ville")
+            .checked,
+
+        sexe:
+            document
+            .getElementById("sexe")
+            .checked,
+
+        taille:
+            document
+            .getElementById("taille")
+            .checked,
+
+        photo:
+            document
+            .getElementById("photo")
+            .checked,
+
+        piece:
+            document
+            .getElementById("piece")
+            .checked,
+
+        projet:
+            document
+            .getElementById("projet")
+            .checked
+
+    };
+
+
+    /* ID UNIQUE */
+
+    const rowId =
+        "inscription-" +
+        Date.now();
+
+
+    /* DONNÉES POUR APPWRITE */
+
+    const data = {
+
+        titre:
+            nomEvenement,
+
+        description:
+            description,
+
+        dateDebut:
+            dateDebut,
+
+        dateFin:
+            dateFin,
+
+        frais:
+            frais,
+
+        statut:
+            statut,
+
+        champs:
+            JSON.stringify(champs)
+
+    };
+
+
+    /* URL APPWRITE TABLESDB */
+
+    const url =
+        "https://cloud.appwrite.io/v1/tablesdb/" +
+        DATABASE_ID +
+        "/tables/" +
+        TABLE_ID +
+        "/rows";
+
+
+    try {
+
+        bouton.textContent =
+            "CRÉATION EN COURS...";
+
+        bouton.classList.add(
+            "loading"
+        );
+
+
+        const response =
+            await fetch(
+
+                url,
+
+                {
+
+                    method: "POST",
+
+                    credentials: "include",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        "Accept":
+                            "application/json",
+
+                        "X-Appwrite-Project":
+                            PROJECT_ID
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            rowId:
+                                rowId,
+
+                            data:
+                                data
+
+                        })
+
+                }
+
+            );
+
+
+        const result =
+            await response.json();
+
+
+        console.log(
+            "Réponse Appwrite :",
+            result
+        );
+
+
+        /* ERREUR */
+
+        if (!response.ok) {
+
+            console.error(
+                "Erreur Appwrite :",
+                result
+            );
+
+
+            alert(
+
+                "Erreur lors de la création.\n\n" +
+
+                (
+                    result.message ||
+                    "Erreur inconnue."
+                )
+
+            );
+
+
+            bouton.textContent =
+                "CRÉER LE FORMULAIRE";
+
+            bouton.classList.remove(
+                "loading"
+            );
+
+            return;
+        }
+
+
+        /* SUCCÈS */
+
+        alert(
+
+            "Le formulaire « " +
+            nomEvenement +
+            " » a été créé avec succès !"
+
+        );
+
+
+        /* RETOUR ADMIN */
+
+        window.location.href =
+            "admin-inscription.html";
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Erreur de connexion :",
+            error
+        );
+
+
+        alert(
+
+            "Impossible de contacter Appwrite.\n\n" +
+            error.message
+
+        );
+
+
+        bouton.textContent =
+            "CRÉER LE FORMULAIRE";
+
+        bouton.classList.remove(
+            "loading"
+        );
+
+    }
+
+}
+
+
+/* ================================
+   ANNULER
+================================ */
+
+function annuler() {
+
+    window.location.href =
+        "admin-inscription.html";
+
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AJADD HUB - Gestion des contenus</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f6f8;
+            color: #222;
+        }
+
+        header {
+            background: #111827;
+            color: white;
+            padding: 20px;
+        }
+
+        header h1 {
+            margin-bottom: 5px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 15px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.08);
+        }
+
+        .stat h3 {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .stat strong {
+            font-size: 28px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.08);
+        }
+
+        .card h2 {
+            margin-bottom: 20px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .full {
+            grid-column: 1 / -1;
+        }
+
+        button {
+            border: none;
+            padding: 11px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background: #111827;
+            color: white;
+        }
+
+        .btn-edit {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-delete {
+            background: #dc2626;
+            color: white;
+        }
+
+        .btn-cancel {
+            background: #6b7280;
+            color: white;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 13px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: #f9fafb;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .publie {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .brouillon {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .archive {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        @media (max-width: 700px) {
+            .filters {
+                grid-template-columns: 1fr;
+            }
+
+            th,
+            td {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>AJADD HUB</h1>
+    <p>Gestion des contenus</p>
+</header>
+
+<div class="container">
+
+    <div id="message" class="message"></div>
+
+    <!-- STATISTIQUES -->
+    <div class="stats">
+
+        <div class="stat">
+            <h3>Total contenus</h3>
+            <strong id="totalContenus">0</strong>
+        </div>
+
+        <div class="stat">
+            <h3>Publiés</h3>
+            <strong id="totalPublies">0</strong>
+        </div>
+
+        <div class="stat">
+            <h3>Brouillons</h3>
+            <strong id="totalBrouillons">0</strong>
+        </div>
+
+        <div class="stat">
+            <h3>Archivés</h3>
+            <strong id="totalArchives">0</strong>
+        </div>
+
+    </div>
+
+    <!-- FORMULAIRE -->
+    <div class="card">
+
+        <h2 id="formTitle">Ajouter un contenu</h2>
+
+        <form id="contenuForm">
+
+            <div class="form-grid">
+
+                <div>
+                    <label>Titre</label>
+                    <input
+                        type="text"
+                        id="titre"
+                        maxlength="150"
+                        required
+                    >
+                </div>
+
+                <div>
+                    <label>Type</label>
+                    <select id="type">
+                        <option value="Article">Article</option>
+                        <option value="Annonce">Annonce</option>
+                        <option value="Actualité">Actualité</option>
+                        <option value="Communiqué">Communiqué</option>
+                        <option value="Information">Information</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label>Statut</label>
+                    <select id="statut">
+                        <option value="Publié">Publié</option>
+                        <option value="Brouillon">Brouillon</option>
+                        <option value="Archivé">Archivé</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label>Auteur</label>
+                    <input
+                        type="text"
+                        id="auteur"
+                        maxlength="150"
+                        placeholder="AJADD TOGO"
+                    >
+                </div>
+
+                <div>
+                    <label>Date de publication</label>
+                    <input
+                        type="date"
+                        id="datePublication"
+                    >
+                </div>
+
+                <div class="full">
+                    <label>Description / contenu</label>
+                    <textarea
+                        id="description"
+                        maxlength="500"
+                        placeholder="Écrivez le contenu..."
+                    ></textarea>
+                </div>
+
+                <div class="actions full">
+
+                    <button
+                        type="submit"
+                        class="btn-primary"
+                        id="btnEnregistrer"
+                    >
+                        Enregistrer
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn-cancel"
+                        id="btnAnnuler"
+                        onclick="annulerModification()"
+                        style="display:none;"
+                    >
+                        Annuler
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+    <!-- LISTE -->
+    <div class="card">
+
+        <h2>Liste des contenus</h2>
+
+        <div class="filters">
+
+            <input
+                type="text"
+                id="recherche"
+                placeholder="Rechercher un contenu..."
+                oninput="afficherContenus()"
+            >
+
+            <select
+                id="filtreType"
+                onchange="afficherContenus()"
+            >
+                <option value="">Tous les types</option>
+                <option value="Article">Article</option>
+                <option value="Annonce">Annonce</option>
+                <option value="Actualité">Actualité</option>
+                <option value="Communiqué">Communiqué</option>
+                <option value="Information">Information</option>
+            </select>
+
+            <select
+                id="filtreStatut"
+                onchange="afficherContenus()"
+            >
+                <option value="">Tous les statuts</option>
+                <option value="Publié">Publié</option>
+                <option value="Brouillon">Brouillon</option>
+                <option value="Archivé">Archivé</option>
+            </select>
+
+        </div>
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Titre</th>
+                        <th>Type</th>
+                        <th>Statut</th>
+                        <th>Auteur</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody id="listeContenus">
+                    <tr>
+                        <td colspan="6">
+                            Chargement...
+                        </td>
+                    </tr>
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+    // =====================================================
+    // CONFIGURATION APPWRITE
+    // =====================================================
+
+    const PROJECT_ID = "6ac62abb001c74bb8de5";
+
+    const DATABASE_ID = "6ac62bca002f025e7f1b";
+
+    // IMPORTANT :
+    // Remplace cette valeur par l'ID réel de ta table Contenus
+    const TABLE_ID = "6ac73b3b0007beb2fcc8";
+
+    const BASE_URL =
+        "https://cloud.appwrite.io/v1/tablesdb/" +
+        DATABASE_ID +
+        "/tables/" +
+        TABLE_ID +
+        "/rows";
+
+
+    let contenus = [];
+
+    let contenuEnModification = null;
+
+
+    // =====================================================
+    // MESSAGE
+    // =====================================================
+
+    function afficherMessage(message, type = "success") {
+
+        const element = document.getElementById("message");
+
+        element.textContent = message;
+
+        element.className = "message " + type;
+
+        element.style.display = "block";
+
+        setTimeout(() => {
+
+            element.style.display = "none";
+
+        }, 4000);
+    }
+
+
+    // =====================================================
+    // CHARGER LES CONTENUS
+    // =====================================================
+
+    async function chargerContenus() {
+
+        try {
+
+            const response = await fetch(BASE_URL, {
+
+                method: "GET",
+
+                credentials: "include",
+
+                headers: {
+                    "Accept": "application/json",
+                    "X-Appwrite-Project": PROJECT_ID
+                }
+
+            });
+
+
+            if (!response.ok) {
+
+                const erreur = await response.text();
+
+                console.error(erreur);
+
+                throw new Error(
+                    "Impossible de charger les contenus."
+                );
+            }
+
+
+            const result = await response.json();
+
+            contenus = result.rows || [];
+
+            mettreAJourStatistiques();
+
+            afficherContenus();
+
+        } catch (error) {
+
+            console.error(error);
+
+            afficherMessage(
+                error.message,
+                "error"
+            );
+
+            document.getElementById(
+                "listeContenus"
+            ).innerHTML = `
+                <tr>
+                    <td colspan="6">
+                        Erreur lors du chargement.
+                    </td>
+                </tr>
+            `;
+        }
+    }
+
+
+    // =====================================================
+    // AFFICHER LES CONTENUS
+    // =====================================================
+
+    function afficherContenus() {
+
+        const tbody =
+            document.getElementById("listeContenus");
+
+
+        const recherche =
+            document
+                .getElementById("recherche")
+                .value
+                .toLowerCase();
+
+
+        const filtreType =
+            document.getElementById("filtreType").value;
+
+
+        const filtreStatut =
+            document.getElementById("filtreStatut").value;
+
+
+        const filtres = contenus.filter(contenu => {
+
+            const titre =
+                (contenu.titre || "")
+                .toLowerCase();
+
+            const description =
+                (contenu.description || "")
+                .toLowerCase();
+
+            const type =
+                contenu.type || "";
+
+            const statut =
+                contenu.statut || "";
+
+
+            const correspondRecherche =
+                titre.includes(recherche) ||
+                description.includes(recherche);
+
+
+            const correspondType =
+                !filtreType ||
+                type === filtreType;
+
+
+            const correspondStatut =
+                !filtreStatut ||
+                statut === filtreStatut;
+
+
+            return (
+                correspondRecherche &&
+                correspondType &&
+                correspondStatut
+            );
+
+        });
+
+
+        if (filtres.length === 0) {
+
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6">
+                        Aucun contenu trouvé.
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+
+        tbody.innerHTML = filtres.map(contenu => {
+
+            const statut =
+                contenu.statut || "Brouillon";
+
+
+            let classe = "brouillon";
+
+            if (statut === "Publié") {
+                classe = "publie";
+            }
+
+            if (statut === "Archivé") {
+                classe = "archive";
+            }
+
+
+            return `
+                <tr>
+
+                    <td>
+                        <strong>
+                            ${escapeHTML(contenu.titre || "")}
+                        </strong>
+
+                        <br>
+
+                        <small>
+                            ${escapeHTML(
+                                contenu.description || ""
+                            )}
+                        </small>
+                    </td>
+
+                    <td>
+                        ${escapeHTML(contenu.type || "")}
+                    </td>
+
+                    <td>
+                        <span class="badge ${classe}">
+                            ${escapeHTML(statut)}
+                        </span>
+                    </td>
+
+                    <td>
+                        ${escapeHTML(contenu.auteur || "")}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(
+                            contenu.datePublication || ""
+                        )}
+                    </td>
+
+                    <td>
+
+                        <div class="actions">
+
+                            <button
+                                class="btn-edit"
+                                onclick="modifierContenu('${contenu.$id}')"
+                            >
+                                Modifier
+                            </button>
+
+                            <button
+                                class="btn-delete"
+                                onclick="supprimerContenu('${contenu.$id}')"
+                            >
+                                Supprimer
+                            </button>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+            `;
+
+        }).join("");
+
+    }
+
+
+    // =====================================================
+    // STATISTIQUES
+    // =====================================================
+
+    function mettreAJourStatistiques() {
+
+        document.getElementById(
+            "totalContenus"
+        ).textContent = contenus.length;
+
+
+        document.getElementById(
+            "totalPublies"
+        ).textContent =
+            contenus.filter(
+                c => c.statut === "Publié"
+            ).length;
+
+
+        document.getElementById(
+            "totalBrouillons"
+        ).textContent =
+            contenus.filter(
+                c => c.statut === "Brouillon"
+            ).length;
+
+
+        document.getElementById(
+            "totalArchives"
+        ).textContent =
+            contenus.filter(
+                c => c.statut === "Archivé"
+            ).length;
+
+    }
+
+
+    // =====================================================
+    // ENREGISTRER
+    // =====================================================
+
+    document
+        .getElementById("contenuForm")
+        .addEventListener("submit", async function(event) {
+
+            event.preventDefault();
+
+
+            const titre =
+                document.getElementById("titre").value.trim();
+
+
+            const description =
+                document
+                    .getElementById("description")
+                    .value.trim();
+
+
+            const type =
+                document.getElementById("type").value;
+
+
+            const statut =
+                document.getElementById("statut").value;
+
+
+            const auteur =
+                document.getElementById("auteur").value.trim();
+
+
+            const datePublication =
+                document
+                    .getElementById("datePublication")
+                    .value;
+
+
+            if (!titre) {
+
+                afficherMessage(
+                    "Veuillez saisir un titre.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            const data = {
+
+                titre: titre,
+
+                description: description,
+
+                type: type,
+
+                statut: statut,
+
+                auteur: auteur,
+
+                datePublication:
+                    datePublication,
+
+                createurId:
+                    "admin"
+
+            };
+
+
+            try {
+
+                document.getElementById(
+                    "btnEnregistrer"
+                ).disabled = true;
+
+
+                // ================================
+                // MODIFICATION
+                // ================================
+
+                if (contenuEnModification) {
+
+                    const url =
+                        BASE_URL +
+                        "/" +
+                        encodeURIComponent(
+                            contenuEnModification
+                        );
+
+
+                    const response =
+                        await fetch(url, {
+
+                            method: "PATCH",
+
+                            credentials: "include",
+
+                            headers: {
+
+                                "Content-Type":
+                                    "application/json",
+
+                                "Accept":
+                                    "application/json",
+
+                                "X-Appwrite-Project":
+                                    PROJECT_ID
+
+                            },
+
+                            body: JSON.stringify({
+                                data: data
+                            })
+
+                        });
+
+
+                    if (!response.ok) {
+
+                        const erreur =
+                            await response.text();
+
+                        console.error(erreur);
+
+                        throw new Error(
+                            "Erreur lors de la modification."
+                        );
+                    }
+
+
+                    afficherMessage(
+                        "Contenu modifié avec succès."
+                    );
+
+                }
+
+                // ================================
+                // NOUVEAU CONTENU
+                // ================================
+
+                else {
+
+                    const response =
+                        await fetch(BASE_URL, {
+
+                            method: "POST",
+
+                            credentials: "include",
+
+                            headers: {
+
+                                "Content-Type":
+                                    "application/json",
+
+                                "Accept":
+                                    "application/json",
+
+                                "X-Appwrite-Project":
+                                    PROJECT_ID
+
+                            },
+
+                            body: JSON.stringify({
+
+                                rowId:
+                                    "contenu-" +
+                                    Date.now(),
+
+                                data: data
+
+                            })
+
+                        });
+
+
+                    if (!response.ok) {
+
+                        const erreur =
+                            await response.text();
+
+                        console.error(erreur);
+
+                        throw new Error(
+                            "Erreur lors de la création."
+                        );
+                    }
+
+
+                    afficherMessage(
+                        "Contenu créé avec succès."
+                    );
+                }
+
+
+                annulerModification();
+
+                await chargerContenus();
+
+
+            } catch (error) {
+
+                console.error(error);
+
+                afficherMessage(
+                    error.message,
+                    "error"
+                );
+
+            } finally {
+
+                document.getElementById(
+                    "btnEnregistrer"
+                ).disabled = false;
+
+            }
+
+        });
+
+
+    // =====================================================
+    // MODIFIER
+    // =====================================================
+
+    function modifierContenu(id) {
+
+        const contenu =
+            contenus.find(
+                c => c.$id === id
+            );
+
+
+        if (!contenu) {
+
+            afficherMessage(
+                "Contenu introuvable.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        contenuEnModification = id;
+
+
+        document.getElementById(
+            "formTitle"
+        ).textContent =
+            "Modifier le contenu";
+
+
+        document.getElementById(
+            "titre"
+        ).value =
+            contenu.titre || "";
+
+
+        document.getElementById(
+            "description"
+        ).value =
+            contenu.description || "";
+
+
+        document.getElementById(
+            "type"
+        ).value =
+            contenu.type || "Article";
+
+
+        document.getElementById(
+            "statut"
+        ).value =
+            contenu.statut || "Brouillon";
+
+
+        document.getElementById(
+            "auteur"
+        ).value =
+            contenu.auteur || "";
+
+
+        document.getElementById(
+            "datePublication"
+        ).value =
+            contenu.datePublication || "";
+
+
+        document.getElementById(
+            "btnEnregistrer"
+        ).textContent =
+            "Enregistrer les modifications";
+
+
+        document.getElementById(
+            "btnAnnuler"
+        ).style.display =
+            "inline-block";
+
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+    }
+
+
+    // =====================================================
+    // ANNULER
+    // =====================================================
+
+    function annulerModification() {
+
+        contenuEnModification = null;
+
+
+        document.getElementById(
+            "contenuForm"
+        ).reset();
+
+
+        document.getElementById(
+            "formTitle"
+        ).textContent =
+            "Ajouter un contenu";
+
+
+        document.getElementById(
+            "btnEnregistrer"
+        ).textContent =
+            "Enregistrer";
+
+
+        document.getElementById(
+            "btnAnnuler"
+        ).style.display =
+            "none";
+
+    }
+
+
+    // =====================================================
+    // SUPPRIMER
+    // =====================================================
+
+    async function supprimerContenu(id) {
+
+        const confirmation =
+            confirm(
+                "Voulez-vous vraiment supprimer ce contenu ?"
+            );
+
+
+        if (!confirmation) {
+            return;
+        }
+
+
+        try {
+
+            const url =
+                BASE_URL +
+                "/" +
+                encodeURIComponent(id);
+
+
+            const response =
+                await fetch(url, {
+
+                    method: "DELETE",
+
+                    credentials: "include",
+
+                    headers: {
+
+                        "Accept":
+                            "application/json",
+
+                        "X-Appwrite-Project":
+                            PROJECT_ID
+
+                    }
+
+                });
+
+
+            if (!response.ok) {
+
+                const erreur =
+                    await response.text();
+
+                console.error(erreur);
+
+                throw new Error(
+                    "Erreur lors de la suppression."
+                );
+            }
+
+
+            afficherMessage(
+                "Contenu supprimé avec succès."
+            );
+
+
+            await chargerContenus();
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            afficherMessage(
+                error.message,
+                "error"
+            );
+
+        }
+
+    }
+
+
+    // =====================================================
+    // PROTECTION HTML
+    // =====================================================
+
+    function escapeHTML(value) {
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
+    }
+
+
+    // =====================================================
+    // LANCEMENT
+    // =====================================================
+
+    chargerContenus();
+
+</script>
+
+<script src="admin-guard.js"></script>
+</body>
+</html>

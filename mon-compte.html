@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Mon compte - AJADD HUB</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@17.0.0"></script>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f5f7;
+            color: #222;
+        }
+
+        header {
+            background: #071a3d;
+            color: white;
+            padding: 18px 25px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            color: #d4af37;
+            font-size: 26px;
+            font-weight: bold;
+        }
+
+        .retour {
+            background: #d4af37;
+            color: #071a3d;
+            padding: 10px 16px;
+            border-radius: 7px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 35px auto;
+            padding: 20px;
+        }
+
+        .box {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+
+            box-shadow:
+                0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            color: #071a3d;
+            margin-bottom: 10px;
+        }
+
+        .description {
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        .information {
+            margin-top: 10px;
+        }
+
+        .ligne {
+            padding: 18px 0;
+            border-bottom: 1px solid #eeeeee;
+        }
+
+        .label {
+            color: #777;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .valeur {
+            color: #071a3d;
+            font-size: 17px;
+            font-weight: bold;
+            word-break: break-word;
+        }
+
+        .chargement {
+            text-align: center;
+            color: #777;
+            padding: 20px;
+        }
+
+        #message {
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        @media (max-width: 550px) {
+
+            header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .container {
+                margin-top: 20px;
+            }
+
+            .box {
+                padding: 22px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <div class="logo">
+        AJADD HUB
+    </div>
+
+    <a
+        href="dashboard.html"
+        class="retour"
+    >
+        ← Dashboard
+    </a>
+
+</header>
+
+
+<main class="container">
+
+    <div class="box">
+
+        <h1>
+            👤 Mon compte
+        </h1>
+
+        <p class="description">
+            Consultez les informations de votre compte
+            AJADD HUB.
+        </p>
+
+
+        <div
+            id="chargement"
+            class="chargement"
+        >
+            Chargement de votre compte...
+        </div>
+
+
+        <div
+            id="information"
+            class="information"
+            style="display:none;"
+        >
+
+            <div class="ligne">
+
+                <div class="label">
+                    Nom et prénom
+                </div>
+
+                <div
+                    id="nom"
+                    class="valeur"
+                >
+                    -
+                </div>
+
+            </div>
+
+
+            <div class="ligne">
+
+                <div class="label">
+                    Adresse e-mail
+                </div>
+
+                <div
+                    id="email"
+                    class="valeur"
+                >
+                    -
+                </div>
+
+            </div>
+
+
+            <div class="ligne">
+
+                <div class="label">
+                    Identifiant du compte
+                </div>
+
+                <div
+                    id="identifiant"
+                    class="valeur"
+                >
+                    -
+                </div>
+
+            </div>
+
+
+            <div class="ligne">
+
+                <div class="label">
+                    Compte créé le
+                </div>
+
+                <div
+                    id="date"
+                    class="valeur"
+                >
+                    -
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div id="message"></div>
+
+    </div>
+
+</main>
+
+
+<script>
+
+
+/* ==============================
+   CONNEXION À APPWRITE
+============================== */
+
+const client = new Appwrite.Client();
+
+client
+    .setEndpoint(
+        "https://cloud.appwrite.io/v1"
+    )
+    .setProject(
+        "6ac62abb001c74bb8de5"
+    );
+
+
+const account =
+    new Appwrite.Account(client);
+
+
+/* ==============================
+   CHARGER LE COMPTE
+============================== */
+
+async function chargerCompte() {
+
+    try {
+
+        const utilisateur =
+            await account.get();
+
+
+        console.log(
+            "UTILISATEUR :",
+            utilisateur
+        );
+
+
+        document.getElementById(
+            "nom"
+        ).textContent =
+            utilisateur.name ||
+            "Non renseigné";
+
+
+        document.getElementById(
+            "email"
+        ).textContent =
+            utilisateur.email;
+
+
+        document.getElementById(
+            "identifiant"
+        ).textContent =
+            utilisateur.$id;
+
+
+        const dateCreation =
+            new Date(
+                utilisateur.$createdAt
+            );
+
+
+        document.getElementById(
+            "date"
+        ).textContent =
+            dateCreation.toLocaleDateString(
+                "fr-FR",
+                {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric"
+                }
+            );
+
+
+        document.getElementById(
+            "chargement"
+        ).style.display = "none";
+
+
+        document.getElementById(
+            "information"
+        ).style.display = "block";
+
+
+    } catch (error) {
+
+        console.error(
+            "ERREUR :",
+            error
+        );
+
+
+        window.location.href =
+            "Connexion.html";
+
+    }
+
+}
+
+
+/* ==============================
+   LANCER
+============================== */
+
+chargerCompte();
+
+
+</script>
+
+</body>
+
+</html>

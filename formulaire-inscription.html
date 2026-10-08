@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AJADD HUB — Candidature</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6fa;
+            color: #07152f;
+        }
+
+        header {
+            background: #07152f;
+            color: white;
+            padding: 25px 15px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            color: #d4af37;
+            font-size: 28px;
+        }
+
+        header p {
+            margin: 8px 0 0;
+            opacity: .9;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 0 15px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 18px rgba(0,0,0,.08);
+        }
+
+        .titre {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .titre h2 {
+            color: #07152f;
+            margin-bottom: 10px;
+        }
+
+        .description {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .infos {
+            background: #f8f9fc;
+            border-left: 4px solid #d4af37;
+            padding: 15px;
+            margin: 20px 0;
+            line-height: 1.8;
+        }
+
+        .champ {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 7px;
+        }
+
+        .obligatoire {
+            color: #d00000;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #d4af37;
+        }
+
+        .bouton {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 7px;
+            background: #07152f;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .bouton:hover {
+            background: #102957;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 7px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .erreur {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .succes {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .chargement {
+            text-align: center;
+            padding: 40px;
+            color: #777;
+        }
+
+        .reference {
+            font-size: 20px;
+            font-weight: bold;
+            color: #07152f;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        @media(max-width:600px) {
+
+            .card {
+                padding: 20px;
+            }
+
+            header h1 {
+                font-size: 23px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>AJADD HUB</h1>
+    <p>Plateforme officielle de candidature</p>
+</header>
+
+
+<div class="container">
+
+    <div class="card">
+
+        <div id="chargement" class="chargement">
+            Chargement du formulaire...
+        </div>
+
+
+        <div id="contenu" style="display:none;">
+
+            <div class="titre">
+
+                <h2 id="titreFormulaire">
+                    Candidature
+                </h2>
+
+                <div
+                    id="descriptionFormulaire"
+                    class="description">
+                </div>
+
+            </div>
+
+
+            <div class="infos">
+
+                <div>
+                    <strong>Date de début :</strong>
+                    <span id="dateDebut"></span>
+                </div>
+
+                <div>
+                    <strong>Date de fin :</strong>
+                    <span id="dateFin"></span>
+                </div>
+
+                <div>
+                    <strong>Frais :</strong>
+                    <span id="frais"></span>
+                </div>
+
+            </div>
+
+
+            <div
+                id="message"
+                class="message">
+            </div>
+
+
+            <form id="formulaireCandidature">
+
+                <div id="champsFormulaire"></div>
+
+                <button
+                    type="submit"
+                    class="bouton">
+                    ENVOYER MA CANDIDATURE
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <div
+            id="succes"
+            style="display:none;">
+
+            <div class="message succes"
+                 style="display:block;">
+
+                <h2>Candidature enregistrée</h2>
+
+                <p>
+                    Votre candidature a été enregistrée
+                    avec succès.
+                </p>
+
+            </div>
+
+            <div class="reference">
+
+                Référence :
+                <span id="referenceCandidature"></span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const PROJECT_ID = "6ac62abb001c74bb8de5";
+
+const DATABASE_ID = "6ac62bca002f025e7f1b";
+
+const TABLE_INSCRIPTIONS = "6ac6d3d5002772ea9246";
+
+const TABLE_CANDIDATURES = "6ac6de7c002ae499f886";
+
+
+const parametres =
+    new URLSearchParams(window.location.search);
+
+const formulaireId =
+    parametres.get("id");
+
+
+let formulaire = null;
+
+
+// =====================================================
+// CHARGEMENT DU FORMULAIRE
+// =====================================================
+
+async function chargerFormulaire() {
+
+    if (!formulaireId) {
+
+        afficherErreur(
+            "Aucun formulaire n'a été sélectionné."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        const url =
+            "https://cloud.appwrite.io/v1/tablesdb/" +
+            DATABASE_ID +
+            "/tables/" +
+            TABLE_INSCRIPTIONS +
+            "/rows/" +
+            encodeURIComponent(formulaireId);
+
+
+        const response = await fetch(url, {
+
+            method: "GET",
+
+            credentials: "include",
+
+            headers: {
+
+                "Accept": "application/json",
+
+                "X-Appwrite-Project": PROJECT_ID
+
+            }
+
+        });
+
+
+        const resultat =
+            await response.json();
+
+
+        console.log(
+            "FORMULAIRE APPWRITE :",
+            resultat
+        );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                resultat.message ||
+                "Impossible de charger le formulaire."
+            );
+
+        }
+
+
+        /*
+         * Appwrite peut retourner les données
+         * directement dans data.
+         */
+
+        if (
+            resultat &&
+            resultat.data &&
+            typeof resultat.data === "object"
+        ) {
+
+            formulaire = resultat.data;
+
+        }
+
+        /*
+         * Sécurité supplémentaire.
+         */
+
+        else if (
+            resultat &&
+            resultat.row &&
+            resultat.row.data
+        ) {
+
+            formulaire = resultat.row.data;
+
+        }
+
+        else {
+
+            formulaire = resultat;
+
+        }
+
+
+        if (!formulaire) {
+
+            throw new Error(
+                "Les informations du formulaire sont introuvables."
+            );
+
+        }
+
+
+        afficherFormulaire();
+
+
+    } catch (erreur) {
+
+        console.error(erreur);
+
+        afficherErreur(
+            erreur.message
+        );
+
+    }
+
+}
+
+
+// =====================================================
+// AFFICHER LE FORMULAIRE
+// =====================================================
+
+function afficherFormulaire() {
+
+    document.getElementById(
+        "chargement"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "contenu"
+    ).style.display = "block";
+
+
+    document.getElementById(
+        "titreFormulaire"
+    ).textContent =
+        formulaire.titre ||
+        "Candidature";
+
+
+    document.getElementById(
+        "descriptionFormulaire"
+    ).textContent =
+        formulaire.description ||
+        "Veuillez remplir le formulaire de candidature.";
+
+
+    document.getElementById(
+        "dateDebut"
+    ).textContent =
+        formulaire.datedebut ||
+        "-";
+
+
+    document.getElementById(
+        "dateFin"
+    ).textContent =
+        formulaire.datefin ||
+        "-";
+
+
+    document.getElementById(
+        "frais"
+    ).textContent =
+        formulaire.frais ||
+        "Gratuit";
+
+
+    afficherChamps();
+
+}
+
+
+// =====================================================
+// CHAMPS
+// =====================================================
+
+function afficherChamps() {
+
+    const zone =
+        document.getElementById(
+            "champsFormulaire"
+        );
+
+
+    zone.innerHTML = "";
+
+
+    let champs = [];
+
+
+    try {
+
+        if (formulaire.champs) {
+
+            champs =
+                JSON.parse(formulaire.champs);
+
+        }
+
+    } catch (erreur) {
+
+        console.error(
+            "Erreur champs :",
+            erreur
+        );
+
+    }
+
+
+    /*
+     * Si aucun champ n'est enregistré,
+     * on affiche les champs par défaut.
+     */
+
+    if (
+        !Array.isArray(champs) ||
+        champs.length === 0
+    ) {
+
+        champs = [
+            "nom",
+            "telephone",
+            "email",
+            "dateNaissance",
+            "ville",
+            "sexe",
+            "taille",
+            "photo",
+            "piece",
+            "projet"
+        ];
+
+    }
+
+
+    champs.forEach(function(champ) {
+
+        const bloc =
+            document.createElement("div");
+
+        bloc.className = "champ";
+
+
+        const label =
+            document.createElement("label");
+
+
+        label.innerHTML =
+            nomChamp(champ) +
+            ' <span class="obligatoire">*</span>';
+
+
+        bloc.appendChild(label);
+
+
+        let input;
+
+
+        if (champ === "sexe") {
+
+            input =
+                document.createElement("select");
+
+            input.innerHTML = `
+
+                <option value="">
+                    Sélectionner
+                </option>
+
+                <option value="Femme">
+                    Femme
+                </option>
+
+                <option value="Homme">
+                    Homme
+                </option>
+
+            `;
+
+        }
+
+        else if (champ === "projet") {
+
+            input =
+                document.createElement("textarea");
+
+        }
+
+        else {
+
+            input =
+                document.createElement("input");
+
+
+            if (
+                champ === "dateNaissance"
+            ) {
+
+                input.type = "date";
+
+            }
+
+            else if (
+                champ === "photo" ||
+                champ === "piece"
+            ) {
+
+                input.type = "file";
+
+            }
+
+            else if (
+                champ === "email"
+            ) {
+
+                input.type = "email";
+
+            }
+
+            else if (
+                champ === "telephone"
+            ) {
+
+                input.type = "tel";
+
+            }
+
+            else {
+
+                input.type = "text";
+
+            }
+
+        }
+
+
+        input.name = champ;
+
+        input.required = true;
+
+
+        bloc.appendChild(input);
+
+        zone.appendChild(bloc);
+
+    });
+
+}
+
+
+// =====================================================
+// NOMS DES CHAMPS
+// =====================================================
+
+function nomChamp(champ) {
+
+    const noms = {
+
+        nom:
+            "Nom et prénom",
+
+        telephone:
+            "Numéro de téléphone",
+
+        email:
+            "Adresse e-mail",
+
+        dateNaissance:
+            "Date de naissance",
+
+        ville:
+            "Ville de résidence",
+
+        sexe:
+            "Sexe",
+
+        taille:
+            "Taille",
+
+        photo:
+            "Photo",
+
+        piece:
+            "Pièce d'identité",
+
+        projet:
+            "Présentation du projet"
+
+    };
+
+
+    return noms[champ] || champ;
+
+}
+
+
+// =====================================================
+// ENVOI
+// =====================================================
+
+document
+    .getElementById("formulaireCandidature")
+    .addEventListener(
+        "submit",
+        async function(event) {
+
+            event.preventDefault();
+
+
+            const formulaireHTML =
+                event.target;
+
+
+            /*
+             * Vérification des champs
+             */
+
+            if (
+                !formulaireHTML.checkValidity()
+            ) {
+
+                formulaireHTML.reportValidity();
+
+                return;
+
+            }
+
+
+            const bouton =
+                formulaireHTML.querySelector(
+                    "button"
+                );
+
+
+            bouton.disabled = true;
+
+            bouton.textContent =
+                "ENREGISTREMENT...";
+
+
+            try {
+
+                const formData =
+                    new FormData(
+                        formulaireHTML
+                    );
+
+
+                const candidature = {
+
+                    formulaireId:
+                        formulaireId,
+
+                    nom: "",
+
+                    telephone: "",
+
+                    email: "",
+
+                    dateNaissance: "",
+
+                    ville: "",
+
+                    sexe: "",
+
+                    taille: "",
+
+                    photo: "",
+
+                    piece: "",
+
+                    projet: "",
+
+                    statut:
+                        "en_attente"
+
+                };
+
+
+                formData.forEach(
+                    function(value, key) {
+
+                        if (
+                            value instanceof File
+                        ) {
+
+                            if (
+                                value.name &&
+                                candidature
+                                    .hasOwnProperty(key)
+                            ) {
+
+                                candidature[key] =
+                                    value.name;
+
+                            }
+
+                        }
+
+                        else {
+
+                            if (
+                                candidature
+                                    .hasOwnProperty(key)
+                            ) {
+
+                                candidature[key] =
+                                    value;
+
+                            }
+
+                        }
+
+                    }
+                );
+
+
+                const url =
+                    "https://cloud.appwrite.io/v1/tablesdb/" +
+                    DATABASE_ID +
+                    "/tables/" +
+                    TABLE_CANDIDATURES +
+                    "/rows";
+
+
+                const response =
+                    await fetch(url, {
+
+                        method: "POST",
+
+                        credentials: "include",
+
+                        headers: {
+
+                            "Content-Type":
+                                "application/json",
+
+                            "Accept":
+                                "application/json",
+
+                            "X-Appwrite-Project":
+                                PROJECT_ID
+
+                        },
+
+                        body:
+                            JSON.stringify({
+
+                                rowId:
+                                    "candidature-" +
+                                    Date.now(),
+
+                                data:
+                                    candidature
+
+                            })
+
+                    });
+
+
+                const resultat =
+                    await response.json();
+
+
+                console.log(
+                    "CANDIDATURE APPWRITE :",
+                    resultat
+                );
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        resultat.message ||
+                        "Erreur lors de l'enregistrement."
+                    );
+
+                }
+
+
+                const reference =
+                    genererReference();
+
+
+                document.getElementById(
+                    "contenu"
+                ).style.display = "none";
+
+
+                document.getElementById(
+                    "succes"
+                ).style.display = "block";
+
+
+                document.getElementById(
+                    "referenceCandidature"
+                ).textContent =
+                    reference;
+
+
+            } catch (erreur) {
+
+                console.error(erreur);
+
+                afficherErreur(
+                    erreur.message
+                );
+
+
+                bouton.disabled = false;
+
+                bouton.textContent =
+                    "ENVOYER MA CANDIDATURE";
+
+            }
+
+        }
+    );
+
+
+// =====================================================
+// REFERENCE
+// =====================================================
+
+function genererReference() {
+
+    const maintenant =
+        new Date();
+
+
+    const annee =
+        maintenant.getFullYear();
+
+
+    const mois =
+        String(
+            maintenant.getMonth() + 1
+        ).padStart(2, "0");
+
+
+    const jour =
+        String(
+            maintenant.getDate()
+        ).padStart(2, "0");
+
+
+    const heure =
+        String(
+            maintenant.getHours()
+        ).padStart(2, "0");
+
+
+    const minute =
+        String(
+            maintenant.getMinutes()
+        ).padStart(2, "0");
+
+
+    const seconde =
+        String(
+            maintenant.getSeconds()
+        ).padStart(2, "0");
+
+
+    return (
+        "CAND-" +
+        annee +
+        mois +
+        jour +
+        "-" +
+        heure +
+        minute +
+        seconde
+    );
+
+}
+
+
+// =====================================================
+// ERREUR
+// =====================================================
+
+function afficherErreur(message) {
+
+    document.getElementById(
+        "chargement"
+    ).style.display = "none";
+
+
+    const contenu =
+        document.getElementById(
+            "contenu"
+        );
+
+
+    contenu.style.display =
+        "block";
+
+
+    const zone =
+        document.getElementById(
+            "message"
+        );
+
+
+    zone.className =
+        "message erreur";
+
+
+    zone.textContent =
+        message;
+
+
+    zone.style.display =
+        "block";
+
+}
+
+
+// =====================================================
+// LANCEMENT
+// =====================================================
+
+chargerFormulaire();
+
+</script>
+
+</body>
+</html>

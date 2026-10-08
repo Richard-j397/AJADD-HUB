@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Connexion - AJADD HUB</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@17.0.0"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f5f7;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .box {
+            width: 100%;
+            max-width: 430px;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.10);
+        }
+
+        .logo {
+            text-align: center;
+            color: #d4af37;
+            font-size: 30px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #071a3d;
+            margin-bottom: 25px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #d4af37;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            background: #071a3d;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0b285c;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        #message {
+            text-align: center;
+            margin-top: 18px;
+            font-weight: bold;
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .links a {
+            color: #071a3d;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .links a:hover {
+            color: #d4af37;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="box">
+
+    <div class="logo">
+        AJADD HUB
+    </div>
+
+    <h1>Connexion</h1>
+
+    <form id="connexionForm">
+
+        <input
+            id="email"
+            type="email"
+            placeholder="Adresse e-mail"
+            required
+        >
+
+        <input
+            id="password"
+            type="password"
+            placeholder="Mot de passe"
+            required
+        >
+
+        <button id="submitBtn" type="submit">
+            Se connecter
+        </button>
+
+    </form>
+
+    <div id="message"></div>
+
+    <div class="links">
+        <p>
+            Pas encore de compte ?
+            <a href="Inscription.html">Créer un compte</a>
+        </p>
+    </div>
+
+</div>
+
+<script>
+
+/* =========================================
+   CONFIGURATION APPWRITE
+========================================= */
+
+const client = new Appwrite.Client();
+
+client
+    .setEndpoint("https://cloud.appwrite.io/v1")
+    .setProject("6ac62abb001c74bb8de5");
+
+const account = new Appwrite.Account(client);
+
+
+/* =========================================
+   ÉLÉMENTS
+========================================= */
+
+const formulaire = document.getElementById("connexionForm");
+const message = document.getElementById("message");
+const bouton = document.getElementById("submitBtn");
+
+
+/* =========================================
+   CONNEXION
+========================================= */
+
+formulaire.addEventListener("submit", async function(e) {
+
+    e.preventDefault();
+
+    const email = document
+        .getElementById("email")
+        .value
+        .trim();
+
+    const password = document
+        .getElementById("password")
+        .value;
+
+
+    message.textContent = "";
+    message.style.color = "black";
+
+    bouton.disabled = true;
+    bouton.textContent = "Connexion en cours...";
+
+
+    try {
+
+        /* ================================
+           VÉRIFIER LA SESSION EXISTANTE
+        ================================= */
+
+        try {
+
+            const utilisateur = await account.get();
+
+            console.log(
+                "SESSION ACTIVE :",
+                utilisateur
+            );
+
+            message.style.color = "green";
+
+            message.textContent =
+                "Vous êtes déjà connecté.";
+
+            setTimeout(function() {
+
+                const candidate = localStorage.getItem("candidateSelectionnee");
+
+if (candidate) {
+    window.location.replace("confirmation-vote.html");
+} else {
+    window.location.replace("dashboard.html");
+}
+
+            }, 800);
+
+            return;
+
+        } catch (erreurSession) {
+
+            console.log(
+                "Aucune session active."
+            );
+
+        }
+
+
+        /* ================================
+           CRÉER UNE NOUVELLE SESSION
+        ================================= */
+
+        const session =
+            await account.createEmailPasswordSession(
+                email,
+                password
+            );
+
+        console.log(
+            "CONNEXION RÉUSSIE :",
+            session
+        );
+
+
+        message.style.color = "green";
+
+        message.textContent =
+            "Connexion réussie !";
+
+
+        /* ================================
+           REDIRECTION
+        ================================= */
+
+        setTimeout(function() {
+
+            window.location.replace(
+                "dashboard.html"
+            );
+
+        }, 800);
+
+
+    } catch (error) {
+
+        console.error(
+            "ERREUR APPWRITE :",
+            error
+        );
+
+        message.style.color = "red";
+
+        message.textContent =
+            "Erreur : " + error.message;
+
+        bouton.disabled = false;
+
+        bouton.textContent =
+            "Se connecter";
+    }
+
+});
+
+</script>
+
+</body>
+</html>

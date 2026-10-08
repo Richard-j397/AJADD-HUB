@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AJADD HUB — Gestion des événements</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f5f6f8;
+    color: #172033;
+}
+
+header {
+    background: #071a33;
+    color: white;
+    padding: 20px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.logo span {
+    color: #d4af37;
+}
+
+.header-right {
+    font-size: 14px;
+}
+
+.container {
+    max-width: 1500px;
+    margin: auto;
+    padding: 30px;
+}
+
+h1 {
+    color: #071a33;
+    margin-top: 0;
+}
+
+.subtitle {
+    color: #6c7480;
+    margin-bottom: 25px;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-bottom: 25px;
+}
+
+.stat {
+    background: white;
+    padding: 22px;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(0,0,0,.06);
+}
+
+.stat-title {
+    color: #777;
+    font-size: 14px;
+}
+
+.stat-value {
+    margin-top: 8px;
+    font-size: 26px;
+    font-weight: bold;
+    color: #071a33;
+}
+
+.toolbar {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+input,
+select,
+textarea {
+    padding: 11px 13px;
+    border: 1px solid #d8dce2;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: #d4af37;
+}
+
+.search {
+    flex: 1;
+    min-width: 220px;
+}
+
+button {
+    border: none;
+    border-radius: 8px;
+    padding: 11px 16px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-primary {
+    background: #071a33;
+    color: white;
+}
+
+.btn-gold {
+    background: #d4af37;
+    color: #071a33;
+}
+
+.btn-danger {
+    background: #c0392b;
+    color: white;
+}
+
+.btn-success {
+    background: #218c5a;
+    color: white;
+}
+
+.btn-secondary {
+    background: #e8ebef;
+    color: #172033;
+}
+
+.table-container {
+    background: white;
+    border-radius: 12px;
+    overflow-x: auto;
+    box-shadow: 0 3px 12px rgba(0,0,0,.06);
+}
+
+table {
+    width: 100%;
+    min-width: 1050px;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 15px;
+    border-bottom: 1px solid #edf0f3;
+    text-align: left;
+    font-size: 14px;
+}
+
+th {
+    background: #071a33;
+    color: white;
+}
+
+tr:hover {
+    background: #fafafa;
+}
+
+.badge {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.ouvert {
+    background: #d9f5e7;
+    color: #167044;
+}
+
+.ferme {
+    background: #f8d7da;
+    color: #8b1e29;
+}
+
+.actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.loading,
+.empty {
+    text-align: center;
+    padding: 40px;
+    color: #777;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.55);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal-content {
+    background: white;
+    width: 100%;
+    max-width: 700px;
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 14px;
+    padding: 25px;
+}
+
+.modal h2 {
+    margin-top: 0;
+    color: #071a33;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group.full {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    font-size: 13px;
+    font-weight: bold;
+}
+
+textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 22px;
+}
+
+@media(max-width:800px) {
+
+    .stats {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .container {
+        padding: 15px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-group.full {
+        grid-column: auto;
+    }
+
+}
+
+@media(max-width:500px) {
+
+    .stats {
+        grid-template-columns: 1fr;
+    }
+
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+    <div class="logo">
+        AJADD <span>HUB</span>
+    </div>
+
+    <div class="header-right">
+        Administration — Événements
+    </div>
+
+</header>
+
+
+<div class="container">
+
+    <h1>Gestion des événements</h1>
+
+    <div class="subtitle">
+        Gestion centralisée des événements AJADD HUB
+    </div>
+
+
+    <div class="stats">
+
+        <div class="stat">
+            <div class="stat-title">Total événements</div>
+            <div class="stat-value" id="totalEvenements">0</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-title">Événements ouverts</div>
+            <div class="stat-value" id="evenementsOuverts">0</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-title">Événements fermés</div>
+            <div class="stat-value" id="evenementsFermes">0</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-title">Participants</div>
+            <div class="stat-value" id="totalParticipants">0</div>
+        </div>
+
+    </div>
+
+
+    <div class="toolbar">
+
+        <input
+            type="text"
+            id="recherche"
+            class="search"
+            placeholder="Rechercher un événement..."
+            oninput="afficherEvenements()"
+        >
+
+        <select
+            id="filtreStatut"
+            onchange="afficherEvenements()"
+        >
+            <option value="">Tous les statuts</option>
+            <option value="ouvert">Ouvert</option>
+            <option value="ferme">Fermé</option>
+        </select>
+
+        <button
+            class="btn-gold"
+            onclick="ouvrirModal()"
+        >
+            ＋ Nouvel événement
+        </button>
+
+    </div>
+
+
+    <div class="table-container">
+
+        <div
+            id="chargement"
+            class="loading"
+        >
+            Chargement des événements...
+        </div>
+
+
+        <table
+            id="tableEvenements"
+            style="display:none;"
+        >
+
+            <thead>
+
+                <tr>
+                    <th>Titre</th>
+                    <th>Date</th>
+                    <th>Heure</th>
+                    <th>Lieu</th>
+                    <th>Prix</th>
+                    <th>Participants</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+
+            </thead>
+
+            <tbody id="listeEvenements"></tbody>
+
+        </table>
+
+
+        <div
+            id="vide"
+            class="empty"
+            style="display:none;"
+        >
+            Aucun événement trouvé.
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- MODAL -->
+
+<div
+    class="modal"
+    id="modalEvenement"
+>
+
+    <div class="modal-content">
+
+        <h2 id="titreModal">
+            Nouvel événement
+        </h2>
+
+
+        <div class="form-grid">
+
+            <div class="form-group full">
+
+                <label>Titre</label>
+
+                <input
+                    type="text"
+                    id="titre"
+                    placeholder="Ex : Miss Forme Divine 2027"
+                >
+
+            </div>
+
+
+            <div class="form-group full">
+
+                <label>Description</label>
+
+                <textarea
+                    id="description"
+                    placeholder="Description de l'événement"
+                ></textarea>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>Date</label>
+
+                <input
+                    type="date"
+                    id="date"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>Heure</label>
+
+                <input
+                    type="time"
+                    id="heure"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>Lieu</label>
+
+                <input
+                    type="text"
+                    id="lieu"
+                    placeholder="Ex : Agora Senghor"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>Prix</label>
+
+                <input
+                    type="text"
+                    id="prix"
+                    placeholder="Ex : 5000 FCFA"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>Participants</label>
+
+                <input
+                    type="number"
+                    id="participants"
+                    value="0"
+                    min="0"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>Statut</label>
+
+                <select id="statut">
+
+                    <option value="ouvert">
+                        Ouvert
+                    </option>
+
+                    <option value="ferme">
+                        Fermé
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <div class="form-actions">
+
+            <button
+                class="btn-secondary"
+                onclick="fermerModal()"
+            >
+                Annuler
+            </button>
+
+            <button
+                class="btn-primary"
+                onclick="enregistrerEvenement()"
+            >
+                Enregistrer
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* ==========================================
+   CONFIGURATION APPWRITE
+========================================== */
+
+const PROJECT_ID = "6ac62abb001c74bb8de5";
+
+const DATABASE_ID = "6ac62bca002f025e7f1b";
+
+/*
+   REMPLACE UNIQUEMENT LA VALEUR CI-DESSOUS
+   PAR L'ID DE TA TABLE "Evenements".
+*/
+
+const TABLE_ID = "6ac7059f000f4918f6d2";
+
+
+const BASE_URL =
+    "https://cloud.appwrite.io/v1/tablesdb/" +
+    DATABASE_ID +
+    "/tables/" +
+    TABLE_ID +
+    "/rows";
+
+
+let evenements = [];
+
+let evenementEnModification = null;
+
+
+/* ==========================================
+   CHARGER
+========================================== */
+
+async function chargerEvenements() {
+
+    const chargement =
+        document.getElementById("chargement");
+
+    try {
+
+        const response = await fetch(
+            BASE_URL,
+            {
+                method: "GET",
+
+                credentials: "include",
+
+                headers: {
+                    "Accept": "application/json",
+                    "X-Appwrite-Project": PROJECT_ID
+                }
+            }
+        );
+
+
+        const resultat =
+            await response.json();
+
+
+        console.log(
+            "Réponse Appwrite événements :",
+            resultat
+        );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                resultat.message ||
+                "Impossible de charger les événements"
+            );
+
+        }
+
+
+        evenements =
+            resultat.rows || [];
+
+
+        chargement.style.display =
+            "none";
+
+        document.getElementById(
+            "tableEvenements"
+        ).style.display = "table";
+
+
+        afficherEvenements();
+
+
+    } catch (erreur) {
+
+        console.error(erreur);
+
+        chargement.innerHTML =
+            "Erreur lors du chargement : " +
+            erreur.message;
+
+    }
+
+}
+
+
+/* ==========================================
+   AFFICHER
+========================================== */
+
+function afficherEvenements() {
+
+    const recherche =
+        document.getElementById("recherche")
+        .value
+        .toLowerCase();
+
+
+    const filtreStatut =
+        document.getElementById("filtreStatut")
+        .value;
+
+
+    const liste =
+        document.getElementById(
+            "listeEvenements"
+        );
+
+
+    liste.innerHTML = "";
+
+
+    const filtres =
+        evenements.filter(evenement => {
+
+            const texte = (
+
+                (evenement.titre || "") +
+                " " +
+                (evenement.description || "") +
+                " " +
+                (evenement.lieu || "")
+
+            ).toLowerCase();
+
+
+            return (
+
+                texte.includes(recherche) &&
+
+                (
+                    !filtreStatut ||
+                    evenement.statut === filtreStatut
+                )
+
+            );
+
+        });
+
+
+    document.getElementById("vide")
+        .style.display =
+        filtres.length === 0
+        ? "block"
+        : "none";
+
+
+    filtres.forEach(evenement => {
+
+        const ligne =
+            document.createElement("tr");
+
+
+        ligne.innerHTML = `
+
+            <td>
+                <strong>
+                    ${echapper(evenement.titre)}
+                </strong>
+            </td>
+
+            <td>
+                ${echapper(evenement.date)}
+            </td>
+
+            <td>
+                ${echapper(evenement.heure)}
+            </td>
+
+            <td>
+                ${echapper(evenement.lieu)}
+            </td>
+
+            <td>
+                ${echapper(evenement.prix)}
+            </td>
+
+            <td>
+                ${echapper(evenement.participants || "0")}
+            </td>
+
+            <td>
+                ${badgeStatut(evenement.statut)}
+            </td>
+
+            <td>
+
+                <div class="actions">
+
+                    <button
+                        class="btn-secondary"
+                        onclick="modifierEvenement('${evenement.$id}')"
+                    >
+                        Modifier
+                    </button>
+
+                    ${
+                        evenement.statut === "ouvert"
+
+                        ?
+
+                        `
+                        <button
+                            class="btn-secondary"
+                            onclick="fermerEvenement('${evenement.$id}')"
+                        >
+                            Fermer
+                        </button>
+                        `
+
+                        :
+
+                        `
+                        <button
+                            class="btn-success"
+                            onclick="ouvrirEvenement('${evenement.$id}')"
+                        >
+                            Ouvrir
+                        </button>
+                        `
+                    }
+
+                    <button
+                        class="btn-danger"
+                        onclick="supprimerEvenement('${evenement.$id}')"
+                    >
+                        Supprimer
+                    </button>
+
+                </div>
+
+            </td>
+
+        `;
+
+
+        liste.appendChild(ligne);
+
+    });
+
+
+    mettreAJourStats();
+
+}
+
+
+/* ==========================================
+   STATISTIQUES
+========================================== */
+
+function mettreAJourStats() {
+
+    const total =
+        evenements.length;
+
+
+    const ouverts =
+        evenements.filter(
+            e => e.statut === "ouvert"
+        ).length;
+
+
+    const fermes =
+        evenements.filter(
+            e => e.statut === "ferme"
+        ).length;
+
+
+    const participants =
+        evenements.reduce(
+            (total, e) =>
+                total +
+                (Number(e.participants) || 0),
+            0
+        );
+
+
+    document.getElementById(
+        "totalEvenements"
+    ).textContent = total;
+
+
+    document.getElementById(
+        "evenementsOuverts"
+    ).textContent = ouverts;
+
+
+    document.getElementById(
+        "evenementsFermes"
+    ).textContent = fermes;
+
+
+    document.getElementById(
+        "totalParticipants"
+    ).textContent = participants;
+
+}
+
+
+/* ==========================================
+   BADGE
+========================================== */
+
+function badgeStatut(statut) {
+
+    if (statut === "ouvert") {
+
+        return `
+            <span class="badge ouvert">
+                Ouvert
+            </span>
+        `;
+
+    }
+
+
+    return `
+        <span class="badge ferme">
+            Fermé
+        </span>
+    `;
+
+}
+
+
+/* ==========================================
+   MODAL
+========================================== */
+
+function ouvrirModal() {
+
+    evenementEnModification = null;
+
+
+    document.getElementById(
+        "titreModal"
+    ).textContent =
+        "Nouvel événement";
+
+
+    document.getElementById("titre").value =
+        "";
+
+
+    document.getElementById(
+        "description"
+    ).value = "";
+
+
+    document.getElementById("date").value =
+        "";
+
+
+    document.getElementById("heure").value =
+        "";
+
+
+    document.getElementById("lieu").value =
+        "";
+
+
+    document.getElementById("prix").value =
+        "";
+
+
+    document.getElementById(
+        "participants"
+    ).value = "0";
+
+
+    document.getElementById("statut").value =
+        "ouvert";
+
+
+    document.getElementById(
+        "modalEvenement"
+    ).style.display = "flex";
+
+}
+
+
+function fermerModal() {
+
+    document.getElementById(
+        "modalEvenement"
+    ).style.display = "none";
+
+}
+
+
+/* ==========================================
+   ENREGISTRER
+========================================== */
+
+async function enregistrerEvenement() {
+
+    const data = {
+
+        titre:
+            document.getElementById("titre")
+            .value.trim(),
+
+        description:
+            document.getElementById("description")
+            .value.trim(),
+
+        date:
+            document.getElementById("date")
+            .value,
+
+        heure:
+            document.getElementById("heure")
+            .value,
+
+        lieu:
+            document.getElementById("lieu")
+            .value.trim(),
+
+        prix:
+            document.getElementById("prix")
+            .value.trim(),
+
+        statut:
+            document.getElementById("statut")
+            .value,
+
+        participants:
+            document.getElementById("participants")
+            .value || "0",
+
+        createurId:
+            ""
+
+    };
+
+
+    if (!data.titre) {
+
+        alert(
+            "Veuillez saisir le titre de l'événement."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        let response;
+
+
+        /* MODIFICATION */
+
+        if (evenementEnModification) {
+
+            response = await fetch(
+
+                BASE_URL +
+                "/" +
+                encodeURIComponent(
+                    evenementEnModification
+                ),
+
+                {
+                    method: "PATCH",
+
+                    credentials: "include",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        "Accept":
+                            "application/json",
+
+                        "X-Appwrite-Project":
+                            PROJECT_ID
+
+                    },
+
+                    body: JSON.stringify({
+                        data: data
+                    })
+
+                }
+
+            );
+
+        }
+
+
+        /* CREATION */
+
+        else {
+
+            const rowId =
+                "evenement-" +
+                Date.now();
+
+
+            response = await fetch(
+
+                BASE_URL,
+
+                {
+                    method: "POST",
+
+                    credentials: "include",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        "Accept":
+                            "application/json",
+
+                        "X-Appwrite-Project":
+                            PROJECT_ID
+
+                    },
+
+                    body: JSON.stringify({
+
+                        rowId: rowId,
+
+                        data: data
+
+                    })
+
+                }
+
+            );
+
+        }
+
+
+        const resultat =
+            await response.json();
+
+
+        console.log(
+            "Réponse sauvegarde événement :",
+            resultat
+        );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                resultat.message ||
+                "Erreur lors de l'enregistrement"
+            );
+
+        }
+
+
+        alert(
+
+            evenementEnModification
+
+            ?
+
+            "Événement modifié avec succès."
+
+            :
+
+            "Événement créé avec succès."
+
+        );
+
+
+        fermerModal();
+
+
+        await chargerEvenements();
+
+
+    } catch (erreur) {
+
+        console.error(erreur);
+
+        alert(
+            "Erreur : " +
+            erreur.message
+        );
+
+    }
+
+}
+
+
+/* ==========================================
+   MODIFIER
+========================================== */
+
+function modifierEvenement(id) {
+
+    const evenement =
+        evenements.find(
+            e => e.$id === id
+        );
+
+
+    if (!evenement) return;
+
+
+    evenementEnModification = id;
+
+
+    document.getElementById(
+        "titreModal"
+    ).textContent =
+        "Modifier l'événement";
+
+
+    document.getElementById("titre").value =
+        evenement.titre || "";
+
+
+    document.getElementById(
+        "description"
+    ).value =
+        evenement.description || "";
+
+
+    document.getElementById("date").value =
+        evenement.date || "";
+
+
+    document.getElementById("heure").value =
+        evenement.heure || "";
+
+
+    document.getElementById("lieu").value =
+        evenement.lieu || "";
+
+
+    document.getElementById("prix").value =
+        evenement.prix || "";
+
+
+    document.getElementById(
+        "participants"
+    ).value =
+        evenement.participants || "0";
+
+
+    document.getElementById("statut").value =
+        evenement.statut || "ouvert";
+
+
+    document.getElementById(
+        "modalEvenement"
+    ).style.display = "flex";
+
+}
+
+
+/* ==========================================
+   OUVRIR
+========================================== */
+
+async function ouvrirEvenement(id) {
+
+    await changerStatut(
+        id,
+        "ouvert"
+    );
+
+}
+
+
+/* ==========================================
+   FERMER
+========================================== */
+
+async function fermerEvenement(id) {
+
+    await changerStatut(
+        id,
+        "ferme"
+    );
+
+}
+
+
+/* ==========================================
+   CHANGER STATUT
+========================================== */
+
+async function changerStatut(
+    id,
+    statut
+) {
+
+    try {
+
+        const response =
+            await fetch(
+
+                BASE_URL +
+                "/" +
+                encodeURIComponent(id),
+
+                {
+                    method: "PATCH",
+
+                    credentials: "include",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        "Accept":
+                            "application/json",
+
+                        "X-Appwrite-Project":
+                            PROJECT_ID
+
+                    },
+
+                    body: JSON.stringify({
+
+                        data: {
+                            statut: statut
+                        }
+
+                    })
+
+                }
+
+            );
+
+
+        const resultat =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                resultat.message ||
+                "Impossible de modifier le statut"
+            );
+
+        }
+
+
+        await chargerEvenements();
+
+
+    } catch (erreur) {
+
+        alert(
+            "Erreur : " +
+            erreur.message
+        );
+
+    }
+
+}
+
+
+/* ==========================================
+   SUPPRIMER
+========================================== */
+
+async function supprimerEvenement(id) {
+
+    if (
+        !confirm(
+            "Voulez-vous vraiment supprimer cet événement ?"
+        )
+    ) {
+        return;
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+
+                BASE_URL +
+                "/" +
+                encodeURIComponent(id),
+
+                {
+                    method: "DELETE",
+
+                    credentials: "include",
+
+                    headers: {
+
+                        "Accept":
+                            "application/json",
+
+                        "X-Appwrite-Project":
+                            PROJECT_ID
+
+                    }
+
+                }
+
+            );
+
+
+        const resultat =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                resultat.message ||
+                "Impossible de supprimer l'événement"
+            );
+
+        }
+
+
+        alert(
+            "Événement supprimé."
+        );
+
+
+        await chargerEvenements();
+
+
+    } catch (erreur) {
+
+        alert(
+            "Erreur : " +
+            erreur.message
+        );
+
+    }
+
+}
+
+
+/* ==========================================
+   ÉCHAPPER LE HTML
+========================================== */
+
+function echapper(valeur) {
+
+    if (
+        valeur === null ||
+        valeur === undefined
+    ) {
+        return "";
+    }
+
+
+    return String(valeur)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* ==========================================
+   DEMARRAGE
+========================================== */
+
+chargerEvenements();
+
+</script>
+
+<script src="admin-guard.js"></script>
+</body>
+</html>

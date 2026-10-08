@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AJADD HUB — Gestion des inscriptions</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    color: #172033;
+}
+
+header {
+    background: #071a33;
+    color: white;
+    padding: 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.logo span {
+    color: #d4af37;
+}
+
+.btn {
+    border: none;
+    padding: 12px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-gold {
+    background: #d4af37;
+    color: #071a33;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+h1 {
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    color: #667085;
+    margin-bottom: 25px;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-bottom: 25px;
+}
+
+.stat {
+    background: white;
+    padding: 22px;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(0,0,0,.06);
+}
+
+.stat strong {
+    display: block;
+    font-size: 30px;
+    margin-top: 8px;
+    color: #071a33;
+}
+
+.search {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #d0d5dd;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 15px;
+}
+
+.table-box {
+    background: white;
+    border-radius: 12px;
+    overflow-x: auto;
+    box-shadow: 0 3px 12px rgba(0,0,0,.06);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 16px;
+    text-align: left;
+    border-bottom: 1px solid #eaecf0;
+    white-space: nowrap;
+}
+
+th {
+    background: #071a33;
+    color: white;
+}
+
+.status {
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.status-ouvert {
+    background: #dcfae6;
+    color: #067647;
+}
+
+.status-ferme {
+    background: #fee4e2;
+    color: #b42318;
+}
+
+.actions button {
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
+.btn-view {
+    background: #e0f2fe;
+    color: #0369a1;
+}
+
+.btn-edit {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.btn-delete {
+    background: #fee2e2;
+    color: #b42318;
+}
+
+.empty {
+    text-align: center;
+    padding: 40px;
+    color: #667085;
+}
+
+.loading {
+    text-align: center;
+    padding: 40px;
+}
+
+@media (max-width: 700px) {
+    header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+
+    .stats {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">
+        AJADD <span>HUB</span>
+    </div>
+
+    <button class="btn btn-gold" onclick="nouvelleInscription()">
+        ＋ NOUVELLE INSCRIPTION
+    </button>
+<a href="admin-candidatures.html"
+   style="
+       display:inline-block;
+       background:#07152f;
+       color:white;
+       padding:12px 18px;
+       border-radius:7px;
+       text-decoration:none;
+       font-weight:bold;
+       margin-left:10px;
+   ">
+    👥 CANDIDATURES
+</a>
+</header>
+
+<div class="container">
+
+    <h1>Gestion des inscriptions</h1>
+
+    <p class="subtitle">
+        Gérez les formulaires d'inscription créés depuis AJADD HUB.
+    </p>
+
+    <div class="stats">
+
+        <div class="stat">
+            Total des formulaires
+            <strong id="totalFormulaires">0</strong>
+        </div>
+
+        <div class="stat">
+            Formulaires ouverts
+            <strong id="formulairesOuverts">0</strong>
+        </div>
+
+        <div class="stat">
+            Formulaires fermés
+            <strong id="formulairesFermes">0</strong>
+        </div>
+
+    </div>
+
+    <input
+        type="text"
+        id="recherche"
+        class="search"
+        placeholder="Rechercher un formulaire..."
+        oninput="afficherFormulaires()"
+    >
+
+    <div class="table-box">
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Événement</th>
+                    <th>Date début</th>
+                    <th>Date fin</th>
+                    <th>Frais</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody id="listeFormulaires">
+
+                <tr>
+                    <td colspan="6" class="loading">
+                        Chargement des formulaires...
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<script>
+
+const PROJECT_ID = "6ac62abb001c74bb8de5";
+
+const DATABASE_ID = "6ac62bca002f025e7f1b";
+
+const TABLE_ID = "6ac6d3d5002772ea9246";
+
+const URL =
+    "https://cloud.appwrite.io/v1/tablesdb/" +
+    DATABASE_ID +
+    "/tables/" +
+    TABLE_ID +
+    "/rows";
+
+let formulaires = [];
+
+
+/* ============================
+   CHARGER LES FORMULAIRES
+============================ */
+
+async function chargerFormulaires() {
+
+    try {
+
+        const response = await fetch(URL, {
+            method: "GET",
+
+            credentials: "include",
+
+            headers: {
+                "Accept": "application/json",
+                "X-Appwrite-Project": PROJECT_ID
+            }
+        });
+
+        const result = await response.json();
+
+        console.log("Réponse Appwrite :", result);
+
+        if (!response.ok) {
+
+            throw new Error(
+                result.message ||
+                "Impossible de charger les formulaires."
+            );
+
+        }
+
+        formulaires = result.rows || [];
+
+        afficherFormulaires();
+
+        mettreAJourStats();
+
+    } catch (error) {
+
+        console.error(error);
+
+        document.getElementById("listeFormulaires").innerHTML = `
+            <tr>
+                <td colspan="6" class="empty">
+                    Impossible de charger les formulaires.<br><br>
+                    ${error.message}
+                </td>
+            </tr>
+        `;
+    }
+}
+
+
+/* ============================
+   AFFICHER LES FORMULAIRES
+============================ */
+
+function afficherFormulaires() {
+
+    const tbody =
+        document.getElementById("listeFormulaires");
+
+    const recherche =
+        document
+        .getElementById("recherche")
+        .value
+        .toLowerCase();
+
+    const resultats =
+        formulaires.filter(formulaire => {
+
+            const titre =
+                formulaire.titre || "";
+
+            return titre
+                .toLowerCase()
+                .includes(recherche);
+        });
+
+
+    if (resultats.length === 0) {
+
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" class="empty">
+                    Aucun formulaire trouvé.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+
+    tbody.innerHTML = "";
+
+
+    resultats.forEach(formulaire => {
+
+        const data = formulaire;
+
+        const titre =
+            data.titre || "Sans titre";
+
+        const dateDebut =
+            data.datedebut || "-";
+
+        const dateFin =
+            data.datefin || "-";
+
+        const frais =
+            data.frais || "0";
+
+        const statut =
+            data.statut || "ferme";
+
+
+        let classeStatut =
+            statut.toLowerCase() === "ouvert"
+            ? "status-ouvert"
+            : "status-ferme";
+
+
+        const ligne = document.createElement("tr");
+
+
+        ligne.innerHTML = `
+
+            <td>
+                <strong>${titre}</strong>
+            </td>
+
+            <td>
+                ${dateDebut}
+            </td>
+
+            <td>
+                ${dateFin}
+            </td>
+
+            <td>
+                ${frais} FCFA
+            </td>
+
+            <td>
+                <span class="status ${classeStatut}">
+                    ${statut}
+                </span>
+            </td>
+
+            <td class="actions">
+
+                <button
+                    class="btn btn-view"
+                    onclick="voirFormulaire('${formulaire.$id}')">
+                    Voir
+                </button>
+
+                <button
+                    class="btn btn-edit"
+                    onclick="modifierFormulaire('${formulaire.$id}')">
+                    Modifier
+                </button>
+
+                <button
+                    class="btn btn-delete"
+                    onclick="supprimerFormulaire('${formulaire.$id}')">
+                    Supprimer
+                </button>
+
+            </td>
+        `;
+
+
+        tbody.appendChild(ligne);
+
+    });
+}
+
+
+/* ============================
+   STATISTIQUES
+============================ */
+
+function mettreAJourStats() {
+
+    document.getElementById("totalFormulaires")
+        .textContent = formulaires.length;
+
+
+    const ouverts =
+        formulaires.filter(formulaire =>
+            (formulaire.statut || "").toLowerCase() === "ouvert"
+        ).length;
+
+
+    const fermes =
+        formulaires.filter(formulaire =>
+            (formulaire.statut || "").toLowerCase() === "ferme"
+        ).length;
+
+
+    document.getElementById("formulairesOuverts")
+        .textContent = ouverts;
+
+
+    document.getElementById("formulairesFermes")
+        .textContent = fermes;
+}
+
+
+/* ============================
+   NOUVELLE INSCRIPTION
+============================ */
+
+function nouvelleInscription() {
+
+    window.location.href =
+        "creer-inscription.html";
+}
+
+
+/* ============================
+   VOIR
+============================ */
+
+function voirFormulaire(id) {
+
+    window.location.href =
+        "formulaire-inscription.html?id=" + encodeURIComponent(id);
+
+}
+
+
+/* ============================
+   MODIFIER
+============================ */
+
+function modifierFormulaire(id) {
+
+    localStorage.setItem(
+        "formulaireAModifier",
+        id
+    );
+
+    window.location.href =
+        "creer-inscription.html";
+}
+
+
+/* ============================
+   SUPPRIMER
+============================ */
+
+async function supprimerFormulaire(id) {
+
+    const confirmation =
+        confirm(
+            "Voulez-vous vraiment supprimer ce formulaire ?"
+        );
+
+
+    if (!confirmation) {
+        return;
+    }
+
+
+    try {
+
+        const response = await fetch(
+            URL + "/" + id,
+            {
+                method: "DELETE",
+
+                credentials: "include",
+
+                headers: {
+                    "Accept": "application/json",
+                    "X-Appwrite-Project": PROJECT_ID
+                }
+            }
+        );
+
+
+        const result =
+            await response.json()
+            .catch(() => ({}));
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                result.message ||
+                "Erreur lors de la suppression."
+            );
+
+        }
+
+
+        alert(
+            "Le formulaire a été supprimé avec succès."
+        );
+
+
+        chargerFormulaires();
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Erreur : " +
+            error.message
+        );
+
+    }
+}
+
+
+/* ============================
+   DÉMARRAGE
+============================ */
+
+chargerFormulaires();
+
+</script>
+
+<script src="admin-guard.js"></script>
+</body>
+</html>

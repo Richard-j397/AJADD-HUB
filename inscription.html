@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inscription - AJADD HUB</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/appwrite@17.0.0"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 30px;
+    }
+
+    .box {
+      max-width: 450px;
+      margin: auto;
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    input {
+      width: 100%;
+      padding: 13px;
+      margin: 8px 0;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 15px;
+      border: none;
+      border-radius: 8px;
+      background: #111;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+    }
+
+    #message {
+      text-align: center;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="box">
+
+  <h1>Créer un compte</h1>
+
+  <form id="inscriptionForm">
+
+    <input id="nom" type="text" placeholder="Nom" required>
+
+    <input id="prenom" type="text" placeholder="Prénom" required>
+
+    <input id="telephone" type="tel" placeholder="Téléphone" required>
+
+    <input id="email" type="email" placeholder="Adresse e-mail" required>
+
+    <input id="password" type="password"
+           placeholder="Mot de passe"
+           required minlength="8">
+
+    <input id="confirmation" type="password"
+           placeholder="Confirmer le mot de passe"
+           required minlength="8">
+
+    <button id="submitBtn" type="submit">
+      Créer mon compte
+    </button>
+
+  </form>
+
+  <div id="message"></div>
+
+</div>
+
+<script>
+
+console.log("APPWRITE CHARGÉ :", typeof Appwrite);
+
+const client = new Appwrite.Client();
+
+client
+  .setEndpoint("https://cloud.appwrite.io/v1")
+  .setProject("6ac62abb001c74bb8de5");
+
+const account = new Appwrite.Account(client);
+
+const formulaire = document.getElementById("inscriptionForm");
+const message = document.getElementById("message");
+const bouton = document.getElementById("submitBtn");
+
+formulaire.addEventListener("submit", async function(e) {
+
+  e.preventDefault();
+
+  const nom = document.getElementById("nom").value.trim();
+  const prenom = document.getElementById("prenom").value.trim();
+  const telephone = document.getElementById("telephone").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const confirmation = document.getElementById("confirmation").value;
+
+  message.textContent = "";
+  message.style.color = "black";
+
+  if (password !== confirmation) {
+    message.style.color = "red";
+    message.textContent = "Les mots de passe ne correspondent pas.";
+    return;
+  }
+
+  if (password.length < 8) {
+    message.style.color = "red";
+    message.textContent = "Le mot de passe doit contenir au moins 8 caractères.";
+    return;
+  }
+
+  try {
+
+    bouton.disabled = true;
+    bouton.textContent = "Création en cours...";
+
+    console.log("EMAIL ENVOYÉ :", email);
+    console.log("NOM :", nom);
+    console.log("PRÉNOM :", prenom);
+    console.log("TÉLÉPHONE :", telephone);
+
+    const utilisateur = await account.create(
+  Appwrite.ID.unique(),
+  email,
+  password,
+  prenom + " " + nom
+);
+
+    console.log("COMPTE APPWRITE CRÉÉ :", utilisateur);
+
+    message.style.color = "green";
+    message.textContent =
+      "Votre compte AJADD HUB a été créé avec succès !";
+
+    formulaire.reset();
+
+  } catch (error) {
+
+    console.error("ERREUR APPWRITE :", error);
+
+    message.style.color = "red";
+    message.textContent =
+      "Erreur : " + error.message;
+
+  } finally {
+
+    bouton.disabled = false;
+    bouton.textContent = "Créer mon compte";
+
+  }
+
+});
+
+</script>
+
+</body>
+</html>

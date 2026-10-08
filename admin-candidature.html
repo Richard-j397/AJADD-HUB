@@ -1,0 +1,1612 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Administration des candidatures - AJADD HUB</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@17.0.0"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f6f8;
+            color: #222;
+        }
+
+        header {
+            background: #071a3d;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            color: #d4af37;
+            margin-bottom: 5px;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+        }
+
+        h2 {
+            color: #071a3d;
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            color: #071a3d;
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 7px;
+            font-weight: bold;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        textarea {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 13px 20px;
+            border: none;
+            border-radius: 8px;
+            background: #071a3d;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #102d63;
+        }
+
+        .btn-ajouter {
+            background: #d4af37;
+            color: #071a3d;
+            font-weight: bold;
+        }
+
+        .btn-ajouter:hover {
+            background: #c29d25;
+        }
+
+        .btn-supprimer {
+            background: #c62828;
+            color: white;
+            padding: 7px 11px;
+            margin-top: 0;
+            font-size: 13px;
+        }
+
+        .btn-copier {
+            background: #2e7d32;
+        }
+
+        .btn-ouvrir {
+            background: #1565c0;
+        }
+
+        .btn-retour {
+            background: #555;
+            margin-bottom: 20px;
+        }
+
+        .info {
+            background: #fff8e1;
+            color: #795548;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .message {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .success {
+            background: #e8f5e9;
+            color: #1b5e20;
+        }
+
+        .error {
+            background: #ffebee;
+            color: #b71c1c;
+        }
+
+        .element {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 12px;
+            background: #fafafa;
+        }
+
+        .element-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .element-header strong {
+            color: #071a3d;
+        }
+
+        .resume {
+            background: #f8f9fa;
+            border-left: 4px solid #d4af37;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .resume p {
+            margin: 8px 0;
+        }
+
+        .statut {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .ouvert {
+            background: #e8f5e9;
+            color: #1b5e20;
+        }
+
+        .ferme {
+            background: #ffebee;
+            color: #b71c1c;
+        }
+
+        .lien-container {
+            display: none;
+            margin-top: 20px;
+            padding: 18px;
+            background: #f0f4ff;
+            border: 1px solid #d5def5;
+            border-radius: 10px;
+        }
+
+        .lien {
+            background: white;
+            border: 1px solid #ccc;
+            padding: 12px;
+            border-radius: 8px;
+            word-break: break-all;
+            margin-top: 10px;
+        }
+
+        .identifiant {
+            background: #071a3d;
+            color: #d4af37;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            word-break: break-all;
+            font-family: monospace;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+            padding: 12px;
+            background: #fafafa;
+            border-radius: 8px;
+        }
+
+        .checkbox-row input {
+            width: auto;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+
+            .card {
+                padding: 18px;
+            }
+
+            .element-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>AJADD HUB</h1>
+    <p>Administration des candidatures</p>
+</header>
+
+<div class="container">
+
+    <button
+        type="button"
+        class="btn-retour"
+        onclick="retourAdmin()"
+    >
+        ← Retour au Dashboard Admin
+    </button>
+
+
+    <!-- INFORMATIONS -->
+
+    <div class="card">
+
+        <h2>Créer un appel à candidature</h2>
+
+        <div class="info">
+            Créez un appel à candidature et définissez les informations
+            que les candidats devront fournir.
+        </div>
+
+        <label for="titre">
+            Titre de l'appel à candidature
+        </label>
+
+        <input
+            type="text"
+            id="titre"
+            placeholder="Exemple : Appel à candidature Miss Forme Divine 2027"
+        >
+
+
+        <label for="description">
+            Description
+        </label>
+
+        <textarea
+            id="description"
+            placeholder="Présentez le projet, le concours ou l'opportunité..."
+        ></textarea>
+
+
+        <label for="conditions">
+            Conditions de candidature
+        </label>
+
+        <textarea
+            id="conditions"
+            placeholder="Exemple : être âgée de 18 à 25 ans, résider au Togo..."
+        ></textarea>
+
+
+        <label for="dateDebut">
+            Date et heure de début
+        </label>
+
+        <input
+            type="datetime-local"
+            id="dateDebut"
+        >
+
+
+        <label for="dateFin">
+            Date et heure de clôture
+        </label>
+
+        <input
+            type="datetime-local"
+            id="dateFin"
+        >
+
+
+        <label for="statut">
+            Statut
+        </label>
+
+        <select id="statut">
+
+            <option value="ouvert">
+                Ouvert
+            </option>
+
+            <option value="ferme">
+                Fermé
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <!-- INFORMATIONS CANDIDAT -->
+
+    <div class="card">
+
+        <h2>Informations à demander</h2>
+
+        <div class="info">
+            Ces informations permettront de constituer le dossier
+            de chaque candidat.
+        </div>
+
+        <div id="listeChamps">
+
+            <div class="element">
+
+                <div class="element-header">
+
+                    <strong>
+                        Nom et prénom
+                    </strong>
+
+                </div>
+
+            </div>
+
+            <div class="element">
+
+                <div class="element-header">
+
+                    <strong>
+                        Téléphone
+                    </strong>
+
+                </div>
+
+            </div>
+
+            <div class="element">
+
+                <div class="element-header">
+
+                    <strong>
+                        Adresse e-mail
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <h3 style="margin-top:25px;">
+            Ajouter une information
+        </h3>
+
+        <label for="nouveauChamp">
+            Nom de l'information
+        </label>
+
+        <input
+            type="text"
+            id="nouveauChamp"
+            placeholder="Exemple : Taille"
+        >
+
+
+        <label for="typeChamp">
+            Type
+        </label>
+
+        <select id="typeChamp">
+
+            <option value="text">
+                Texte
+            </option>
+
+            <option value="number">
+                Nombre
+            </option>
+
+            <option value="date">
+                Date
+            </option>
+
+            <option value="email">
+                E-mail
+            </option>
+
+            <option value="tel">
+                Téléphone
+            </option>
+
+            <option value="textarea">
+                Texte long
+            </option>
+
+        </select>
+
+
+        <button
+            type="button"
+            class="btn-ajouter"
+            onclick="ajouterChamp()"
+        >
+            + Ajouter cette information
+        </button>
+
+
+        <div
+            id="messageChamp"
+            class="message"
+        ></div>
+
+    </div>
+
+
+    <!-- PIECES -->
+
+    <div class="card">
+
+        <h2>Pièces à fournir</h2>
+
+        <div class="info">
+            Indiquez les documents que les candidats devront
+            éventuellement joindre à leur dossier.
+        </div>
+
+        <div id="listePieces">
+
+            <div class="element">
+
+                <div class="element-header">
+
+                    <strong>
+                        Photo d'identité
+                    </strong>
+
+                </div>
+
+            </div>
+
+            <div class="element">
+
+                <div class="element-header">
+
+                    <strong>
+                        Pièce d'identité
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <label for="nouvellePiece">
+            Ajouter une pièce
+        </label>
+
+        <input
+            type="text"
+            id="nouvellePiece"
+            placeholder="Exemple : Certificat de naissance"
+        >
+
+
+        <div class="checkbox-row">
+
+            <input
+                type="checkbox"
+                id="pieceObligatoire"
+                checked
+            >
+
+            <label
+                for="pieceObligatoire"
+                style="margin:0;"
+            >
+                Pièce obligatoire
+            </label>
+
+        </div>
+
+
+        <button
+            type="button"
+            class="btn-ajouter"
+            onclick="ajouterPiece()"
+        >
+            + Ajouter la pièce
+        </button>
+
+
+        <div
+            id="messagePiece"
+            class="message"
+        ></div>
+
+    </div>
+
+
+    <!-- RESUME -->
+
+    <div class="card">
+
+        <h2>Résumé de l'appel</h2>
+
+        <div class="resume">
+
+            <p>
+                <strong>Titre :</strong>
+                <span id="resumeTitre">
+                    Non renseigné
+                </span>
+            </p>
+
+            <p>
+                <strong>Début :</strong>
+                <span id="resumeDebut">
+                    Non renseigné
+                </span>
+            </p>
+
+            <p>
+                <strong>Fin :</strong>
+                <span id="resumeFin">
+                    Non renseigné
+                </span>
+            </p>
+
+            <p>
+                <strong>Statut :</strong>
+                <span id="resumeStatut">
+                    <span class="statut ouvert">
+                        Ouvert
+                    </span>
+                </span>
+            </p>
+
+            <p>
+                <strong>Informations :</strong>
+                <span id="nombreChamps">
+                    3
+                </span>
+            </p>
+
+            <p>
+                <strong>Pièces demandées :</strong>
+                <span id="nombrePieces">
+                    2
+                </span>
+            </p>
+
+        </div>
+
+
+        <button
+            type="button"
+            onclick="creerCandidature()"
+        >
+            Créer l'appel à candidature
+        </button>
+
+
+        <div
+            id="messageCandidature"
+            class="message"
+        ></div>
+
+
+        <!-- LIEN -->
+
+        <div
+            id="lienContainer"
+            class="lien-container"
+        >
+
+            <h3>
+                🔗 Lien de candidature
+            </h3>
+
+            <p>
+                Envoyez ce lien aux personnes qui souhaitent
+                déposer leur candidature.
+            </p>
+
+
+            <div
+                id="identifiantCandidature"
+                class="identifiant"
+            ></div>
+
+
+            <div
+                id="lienCandidature"
+                class="lien"
+            ></div>
+
+
+            <div class="actions">
+
+                <button
+                    type="button"
+                    class="btn-copier"
+                    onclick="copierLien()"
+                >
+                    📋 Copier le lien
+                </button>
+
+
+                <button
+                    type="button"
+                    class="btn-ouvrir"
+                    onclick="ouvrirCandidature()"
+                >
+                    👁️ Ouvrir
+                </button>
+
+            </div>
+
+
+            <div
+                id="messageLien"
+                class="message"
+            ></div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    /* =========================
+       APPWRITE
+    ========================= */
+
+    const client =
+        new Appwrite.Client();
+
+    client
+        .setEndpoint(
+            "https://cloud.appwrite.io/v1"
+        )
+        .setProject(
+            "6ac62abb001c74bb8de5"
+        );
+
+    const account =
+        new Appwrite.Account(client);
+
+
+    /* =========================
+       VARIABLES
+    ========================= */
+
+    let champs = [
+        {
+            nom: "Nom et prénom",
+            type: "text",
+            fixe: true
+        },
+        {
+            nom: "Téléphone",
+            type: "tel",
+            fixe: true
+        },
+        {
+            nom: "Adresse e-mail",
+            type: "email",
+            fixe: true
+        }
+    ];
+
+
+    let pieces = [
+        {
+            nom: "Photo d'identité",
+            obligatoire: true
+        },
+        {
+            nom: "Pièce d'identité",
+            obligatoire: true
+        }
+    ];
+
+
+    let idCandidatureActuel = "";
+
+    let lienCandidatureActuel = "";
+
+
+    /* =========================
+       CONNEXION
+    ========================= */
+
+    async function verifierConnexion() {
+
+        try {
+
+            const utilisateur =
+                await account.get();
+
+            console.log(
+                "UTILISATEUR CONNECTÉ :",
+                utilisateur
+            );
+
+        } catch (error) {
+
+            console.error(
+                "UTILISATEUR NON CONNECTÉ :",
+                error
+            );
+
+            window.location.href =
+                "Connexion.html";
+        }
+
+    }
+
+
+    /* =========================
+       RETOUR ADMIN
+    ========================= */
+
+    function retourAdmin() {
+
+        window.location.href =
+            "admin.html";
+
+    }
+
+
+    /* =========================
+       AJOUTER CHAMP
+    ========================= */
+
+    function ajouterChamp() {
+
+        const input =
+            document.getElementById(
+                "nouveauChamp"
+            );
+
+        const type =
+            document.getElementById(
+                "typeChamp"
+            ).value;
+
+        const message =
+            document.getElementById(
+                "messageChamp"
+            );
+
+        const nom =
+            input.value.trim();
+
+
+        if (!nom) {
+
+            message.style.display =
+                "block";
+
+            message.className =
+                "message error";
+
+            message.textContent =
+                "Veuillez indiquer le nom de l'information.";
+
+            return;
+        }
+
+
+        const existe =
+            champs.some(
+                champ =>
+                    champ.nom.toLowerCase() ===
+                    nom.toLowerCase()
+            );
+
+
+        if (existe) {
+
+            message.style.display =
+                "block";
+
+            message.className =
+                "message error";
+
+            message.textContent =
+                "Cette information existe déjà.";
+
+            return;
+        }
+
+
+        champs.push({
+
+            nom: nom,
+
+            type: type,
+
+            fixe: false
+
+        });
+
+
+        afficherChamps();
+
+        input.value = "";
+
+
+        message.style.display =
+            "block";
+
+        message.className =
+            "message success";
+
+        message.textContent =
+            "Information ajoutée avec succès.";
+
+
+        setTimeout(function() {
+
+            message.style.display =
+                "none";
+
+        }, 2000);
+
+    }
+
+
+    /* =========================
+       AFFICHER CHAMPS
+    ========================= */
+
+    function afficherChamps() {
+
+        const liste =
+            document.getElementById(
+                "listeChamps"
+            );
+
+        document.getElementById(
+            "nombreChamps"
+        ).textContent =
+            champs.length;
+
+
+        liste.innerHTML = "";
+
+
+        champs.forEach(
+            function(champ, index) {
+
+                const div =
+                    document.createElement(
+                        "div"
+                    );
+
+                div.className =
+                    "element";
+
+
+                let bouton = "";
+
+
+                if (!champ.fixe) {
+
+                    bouton = `
+
+                        <button
+                            type="button"
+                            class="btn-supprimer"
+                            onclick="supprimerChamp(${index})"
+                        >
+                            Supprimer
+                        </button>
+
+                    `;
+
+                }
+
+
+                div.innerHTML = `
+
+                    <div class="element-header">
+
+                        <strong>
+                            ${champ.nom}
+                        </strong>
+
+                        ${bouton}
+
+                    </div>
+
+                    <p style="
+                        margin-top:8px;
+                        color:#777;
+                        font-size:13px;
+                    ">
+                        Type : ${champ.type}
+                    </p>
+
+                `;
+
+
+                liste.appendChild(div);
+
+            }
+        );
+
+    }
+
+
+    /* =========================
+       SUPPRIMER CHAMP
+    ========================= */
+
+    function supprimerChamp(index) {
+
+        if (champs[index].fixe) {
+            return;
+        }
+
+
+        champs.splice(
+            index,
+            1
+        );
+
+
+        afficherChamps();
+
+    }
+
+
+    /* =========================
+       AJOUTER PIECE
+    ========================= */
+
+    function ajouterPiece() {
+
+        const input =
+            document.getElementById(
+                "nouvellePiece"
+            );
+
+        const obligatoire =
+            document.getElementById(
+                "pieceObligatoire"
+            ).checked;
+
+        const message =
+            document.getElementById(
+                "messagePiece"
+            );
+
+        const nom =
+            input.value.trim();
+
+
+        if (!nom) {
+
+            message.style.display =
+                "block";
+
+            message.className =
+                "message error";
+
+            message.textContent =
+                "Veuillez indiquer le nom de la pièce.";
+
+            return;
+        }
+
+
+        const existe =
+            pieces.some(
+                piece =>
+                    piece.nom.toLowerCase() ===
+                    nom.toLowerCase()
+            );
+
+
+        if (existe) {
+
+            message.style.display =
+                "block";
+
+            message.className =
+                "message error";
+
+            message.textContent =
+                "Cette pièce existe déjà.";
+
+            return;
+        }
+
+
+        pieces.push({
+
+            nom: nom,
+
+            obligatoire: obligatoire
+
+        });
+
+
+        afficherPieces();
+
+        input.value = "";
+
+
+        message.style.display =
+            "block";
+
+        message.className =
+            "message success";
+
+        message.textContent =
+            "Pièce ajoutée avec succès.";
+
+
+        setTimeout(function() {
+
+            message.style.display =
+                "none";
+
+        }, 2000);
+
+    }
+
+
+    /* =========================
+       AFFICHER PIECES
+    ========================= */
+
+    function afficherPieces() {
+
+        const liste =
+            document.getElementById(
+                "listePieces"
+            );
+
+
+        document.getElementById(
+            "nombrePieces"
+        ).textContent =
+            pieces.length;
+
+
+        liste.innerHTML = "";
+
+
+        pieces.forEach(
+            function(piece, index) {
+
+                const div =
+                    document.createElement(
+                        "div"
+                    );
+
+                div.className =
+                    "element";
+
+
+                div.innerHTML = `
+
+                    <div class="element-header">
+
+                        <div>
+
+                            <strong>
+                                ${piece.nom}
+                            </strong>
+
+                            <p style="
+                                margin-top:6px;
+                                color:#777;
+                                font-size:13px;
+                            ">
+                                ${
+                                    piece.obligatoire
+                                    ? "Obligatoire"
+                                    : "Facultative"
+                                }
+                            </p>
+
+                        </div>
+
+                        <button
+                            type="button"
+                            class="btn-supprimer"
+                            onclick="supprimerPiece(${index})"
+                        >
+                            Supprimer
+                        </button>
+
+                    </div>
+
+                `;
+
+
+                liste.appendChild(div);
+
+            }
+        );
+
+    }
+
+
+    /* =========================
+       SUPPRIMER PIECE
+    ========================= */
+
+    function supprimerPiece(index) {
+
+        pieces.splice(
+            index,
+            1
+        );
+
+        afficherPieces();
+
+    }
+
+
+    /* =========================
+       RESUME
+    ========================= */
+
+    document
+        .getElementById("titre")
+        .addEventListener(
+            "input",
+            function() {
+
+                document
+                    .getElementById(
+                        "resumeTitre"
+                    )
+                    .textContent =
+                    this.value ||
+                    "Non renseigné";
+
+            }
+        );
+
+
+    document
+        .getElementById("dateDebut")
+        .addEventListener(
+            "input",
+            function() {
+
+                document
+                    .getElementById(
+                        "resumeDebut"
+                    )
+                    .textContent =
+                    this.value ||
+                    "Non renseigné";
+
+            }
+        );
+
+
+    document
+        .getElementById("dateFin")
+        .addEventListener(
+            "input",
+            function() {
+
+                document
+                    .getElementById(
+                        "resumeFin"
+                    )
+                    .textContent =
+                    this.value ||
+                    "Non renseigné";
+
+            }
+        );
+
+
+    /* =========================
+       STATUT
+    ========================= */
+
+    document
+        .getElementById("statut")
+        .addEventListener(
+            "change",
+            afficherStatut
+        );
+
+
+    function afficherStatut() {
+
+        const statut =
+            document
+                .getElementById("statut")
+                .value;
+
+        const resume =
+            document.getElementById(
+                "resumeStatut"
+            );
+
+
+        if (statut === "ouvert") {
+
+            resume.innerHTML = `
+                <span class="statut ouvert">
+                    Ouvert
+                </span>
+            `;
+
+        } else {
+
+            resume.innerHTML = `
+                <span class="statut ferme">
+                    Fermé
+                </span>
+            `;
+
+        }
+
+    }
+
+
+    /* =========================
+       IDENTIFIANT
+    ========================= */
+
+    function genererIdentifiant() {
+
+        const caracteres =
+            "abcdefghijklmnopqrstuvwxyz0123456789";
+
+        let resultat = "";
+
+
+        for (
+            let i = 0;
+            i < 12;
+            i++
+        ) {
+
+            resultat +=
+                caracteres.charAt(
+                    Math.floor(
+                        Math.random() *
+                        caracteres.length
+                    )
+                );
+
+        }
+
+
+        return resultat;
+
+    }
+
+
+    /* =========================
+       CREER CANDIDATURE
+    ========================= */
+
+    function creerCandidature() {
+
+        const titre =
+            document
+                .getElementById("titre")
+                .value
+                .trim();
+
+        const description =
+            document
+                .getElementById("description")
+                .value
+                .trim();
+
+        const conditions =
+            document
+                .getElementById("conditions")
+                .value
+                .trim();
+
+        const dateDebut =
+            document
+                .getElementById("dateDebut")
+                .value;
+
+        const dateFin =
+            document
+                .getElementById("dateFin")
+                .value;
+
+        const statut =
+            document
+                .getElementById("statut")
+                .value;
+
+        const message =
+            document.getElementById(
+                "messageCandidature"
+            );
+
+
+        if (
+            !titre ||
+            !description ||
+            !conditions ||
+            !dateDebut ||
+            !dateFin
+        ) {
+
+            message.style.display =
+                "block";
+
+            message.className =
+                "message error";
+
+            message.textContent =
+                "Veuillez remplir toutes les informations.";
+
+            return;
+        }
+
+
+        if (
+            new Date(dateFin)
+            <=
+            new Date(dateDebut)
+        ) {
+
+            message.style.display =
+                "block";
+
+            message.className =
+                "message error";
+
+            message.textContent =
+                "La date de clôture doit être après la date de début.";
+
+            return;
+        }
+
+
+        if (champs.length === 0) {
+
+            message.style.display =
+                "block";
+
+            message.className =
+                "message error";
+
+            message.textContent =
+                "Ajoutez au moins une information.";
+
+            return;
+        }
+
+
+        idCandidatureActuel =
+            genererIdentifiant();
+
+
+        lienCandidatureActuel =
+            window.location.origin +
+            "/candidature.html?candidature=" +
+            idCandidatureActuel;
+
+
+        const candidature = {
+
+            id: idCandidatureActuel,
+
+            titre: titre,
+
+            description: description,
+
+            conditions: conditions,
+
+            dateDebut: dateDebut,
+
+            dateFin: dateFin,
+
+            statut: statut,
+
+            champs: champs,
+
+            pieces: pieces
+
+        };
+
+
+        console.log(
+            "APPEL À CANDIDATURE PRÉPARÉ :",
+            candidature
+        );
+
+
+        message.style.display =
+            "block";
+
+        message.className =
+            "message success";
+
+        message.textContent =
+            "Appel à candidature créé avec succès !";
+
+
+        document.getElementById(
+            "identifiantCandidature"
+        ).textContent =
+            "Identifiant : " +
+            idCandidatureActuel;
+
+
+        document.getElementById(
+            "lienCandidature"
+        ).textContent =
+            lienCandidatureActuel;
+
+
+        document.getElementById(
+            "lienContainer"
+        ).style.display =
+            "block";
+
+    }
+
+
+    /* =========================
+       COPIER LIEN
+    ========================= */
+
+    async function copierLien() {
+
+        const message =
+            document.getElementById(
+                "messageLien"
+            );
+
+
+        if (!lienCandidatureActuel) {
+            return;
+        }
+
+
+        try {
+
+            await navigator.clipboard.writeText(
+                lienCandidatureActuel
+            );
+
+
+            message.style.display =
+                "block";
+
+            message.className =
+                "message success";
+
+            message.textContent =
+                "Lien copié avec succès !";
+
+
+            setTimeout(function() {
+
+                message.style.display =
+                    "none";
+
+            }, 2500);
+
+
+        } catch (error) {
+
+            console.error(
+                "Erreur copie :",
+                error
+            );
+
+
+            message.style.display =
+                "block";
+
+            message.className =
+                "message error";
+
+            message.textContent =
+                "Impossible de copier automatiquement le lien.";
+
+        }
+
+    }
+
+
+    /* =========================
+       OUVRIR CANDIDATURE
+    ========================= */
+
+    function ouvrirCandidature() {
+
+        if (!lienCandidatureActuel) {
+            return;
+        }
+
+
+        window.open(
+            lienCandidatureActuel,
+            "_blank"
+        );
+
+    }
+
+
+    /* =========================
+       INITIALISATION
+    ========================= */
+
+    afficherChamps();
+
+    afficherPieces();
+
+    afficherStatut();
+
+    verifierConnexion();
+
+</script>
+
+</body>
+</html>

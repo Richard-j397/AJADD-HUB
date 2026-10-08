@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AJADD HUB - Confirmation du vote</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            color: #111827;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #071a3d;
+            color: white;
+            text-align: center;
+            padding: 25px 15px;
+        }
+
+        header h1 {
+            color: #d4af37;
+            font-size: 30px;
+            margin-bottom: 5px;
+        }
+
+        header p {
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 18px;
+            padding: 35px 25px;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+        }
+
+        .success {
+            width: 75px;
+            height: 75px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            background: #d4af37;
+            color: white;
+            font-size: 45px;
+            line-height: 75px;
+        }
+
+        h2 {
+            color: #071a3d;
+            margin-bottom: 15px;
+        }
+
+        .candidate {
+            margin: 25px 0;
+            padding: 20px;
+            background: #f8f8f8;
+            border-left: 5px solid #d4af37;
+            border-radius: 10px;
+        }
+
+        .candidate strong {
+            display: block;
+            color: #071a3d;
+            font-size: 20px;
+            margin-top: 8px;
+        }
+
+        .warning {
+            font-size: 14px;
+            color: #555;
+            margin: 20px 0;
+            line-height: 1.6;
+        }
+
+        .button {
+            display: inline-block;
+            background: #071a3d;
+            color: white;
+            padding: 14px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background: #102b60;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px 15px;
+            color: #777;
+            font-size: 13px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>AJADD HUB</h1>
+    <p>Plateforme officielle de vote</p>
+</header>
+
+<div class="container">
+
+    <div class="card">
+
+        <div class="success">✓</div>
+
+        <h2>Confirmation de votre choix</h2>
+
+        <p>
+            Vous êtes connecté avec succès.
+        </p>
+
+        <div class="candidate">
+            <span>Vous avez choisi :</span>
+            <strong id="candidateNom">Chargement...</strong>
+        </div>
+
+        <p class="warning">
+            Vérifiez attentivement votre choix avant de continuer.
+            Une fois le vote enregistré, il pourra être soumis aux règles
+            du scrutin en vigueur.
+        </p>
+
+        <button class="button" onclick="confirmerVote()">
+            CONFIRMER MON VOTE
+        </button>
+
+    </div>
+
+</div>
+
+<footer>
+    <strong>AJADD HUB</strong><br>
+    Plateforme numérique officielle AJADD<br><br>
+    © 2026 AJADD TOGO
+</footer>
+
+<script>
+
+const candidate = localStorage.getItem("candidateSelectionnee");
+
+if (!candidate) {
+
+    document.getElementById("candidateNom").textContent =
+        "Aucune candidate sélectionnée";
+
+} else {
+
+    document.getElementById("candidateNom").textContent =
+        candidate;
+}
+
+
+function confirmerVote() {
+
+    if (!candidate) {
+        alert("Aucune candidate n'a été sélectionnée.");
+        return;
+    }
+
+    alert(
+        "Votre choix pour " +
+        candidate +
+        " est confirmé.\\n\\n" +
+        "L'enregistrement réel du vote sera connecté à AJADD HUB."
+    );
+
+    localStorage.removeItem("candidateSelectionnee");
+
+    window.location.href = "vote.html";
+}
+
+</script>
+
+</body>
+</html>

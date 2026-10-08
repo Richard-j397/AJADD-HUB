@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AJADD HUB - Gestion des votes</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@17.0.0"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f5f7;
+            color: #222;
+        }
+
+        header {
+            background: #07152f;
+            color: white;
+            padding: 25px 15px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            color: #d4af37;
+            font-size: 28px;
+        }
+
+        header p {
+            margin: 8px 0 0;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 900px;
+            margin: 30px auto;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #07152f;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 7px;
+            font-weight: bold;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 15px;
+            font-family: Arial, sans-serif;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        button {
+            border: none;
+            border-radius: 7px;
+            padding: 12px 18px;
+            margin-top: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+        .btn-primary {
+            background: #07152f;
+            color: white;
+        }
+
+        .btn-gold {
+            background: #d4af37;
+            color: #07152f;
+        }
+
+        .btn-danger {
+            background: #c62828;
+            color: white;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .candidate {
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 18px;
+            margin-top: 15px;
+        }
+
+        .candidate-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .candidate-title h3 {
+            margin: 0;
+            color: #07152f;
+        }
+
+        .candidate-title button {
+            margin-top: 0;
+        }
+
+        .photo-name {
+            color: #555;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        .summary {
+            background: #f7f1d7;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .message {
+            display: none;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            word-break: break-word;
+        }
+
+        .success {
+            background: #dff5e4;
+            color: #176b2c;
+        }
+
+        .error {
+            background: #ffe0e0;
+            color: #a00000;
+        }
+
+        .link-zone {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+
+        .link-zone button {
+            margin-right: 8px;
+        }
+
+        .empty {
+            color: #777;
+            padding: 15px 0;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>AJADD HUB</h1>
+    <p>Administration des votes</p>
+</header>
+
+
+<div class="container">
+
+    <!-- INFORMATIONS DU VOTE -->
+
+    <div class="card">
+
+        <h2>Créer un vote</h2>
+
+        <label for="titre">
+            Titre du vote
+        </label>
+
+        <input
+            type="text"
+            id="titre"
+            placeholder="Exemple : Miss Forme Divine 2027"
+        >
+
+
+        <label for="description">
+            Description
+        </label>
+
+        <textarea
+            id="description"
+            placeholder="Présentez le vote..."
+        ></textarea>
+
+
+        <label for="datedebut">
+            Date et heure de début
+        </label>
+
+        <input
+            type="datetime-local"
+            id="datedebut"
+        >
+
+
+        <label for="datefin">
+            Date et heure de fin
+        </label>
+
+        <input
+            type="datetime-local"
+            id="datefin"
+        >
+
+
+        <label for="statut">
+            Statut
+        </label>
+
+        <select id="statut">
+
+            <option value="ouvert">
+                Ouvert
+            </option>
+
+            <option value="ferme">
+                Fermé
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <!-- CANDIDATS -->
+
+    <div class="card">
+
+        <h2>Liste des candidats</h2>
+
+        <div id="listeCandidats"></div>
+
+
+        <button
+            type="button"
+            id="btnAjouterCandidat"
+            class="btn-gold"
+        >
+            + Ajouter un candidat
+        </button>
+
+
+        <div class="summary">
+
+            <strong>
+                Nombre de candidats :
+            </strong>
+
+            <span id="nombreCandidats">
+                0
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- CREATION -->
+
+    <div class="card">
+
+        <h2>Enregistrer le vote</h2>
+
+        <button
+            type="button"
+            id="btnCreerVote"
+            class="btn-primary"
+        >
+            Créer le vote
+        </button>
+
+
+        <div
+            id="messageSucces"
+            class="message success"
+        ></div>
+
+
+        <div
+            id="messageErreur"
+            class="message error"
+        ></div>
+
+
+        <div
+            id="zoneLien"
+            class="link-zone"
+        >
+
+            <label>
+                Lien du vote
+            </label>
+
+            <input
+                type="text"
+                id="lienVote"
+                readonly
+            >
+
+
+            <button
+                type="button"
+                id="btnCopier"
+                class="btn-gold"
+            >
+                Copier le lien
+            </button>
+
+
+            <button
+                type="button"
+                id="btnOuvrir"
+                class="btn-primary"
+            >
+                Ouvrir le vote
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    /* =====================================================
+       CONFIGURATION
+    ===================================================== */
+
+    const ENDPOINT =
+        "https://cloud.appwrite.io/v1";
+
+    const PROJECT_ID =
+        "6ac62abb001c74bb8de5";
+
+    const DATABASE_ID =
+        "6ac62bca002f025e7f1b";
+
+    const TABLE_ID =
+        "6ac68b64000cbb48ffe6";
+
+
+    /* =====================================================
+       CLIENT APPWRITE
+    ===================================================== */
+
+    const client =
+        new Appwrite.Client();
+
+    client
+        .setEndpoint(ENDPOINT)
+        .setProject(PROJECT_ID);
+
+
+    const account =
+        new Appwrite.Account(client);
+
+
+    /* =====================================================
+       VARIABLES
+    ===================================================== */
+
+    let utilisateur = null;
+
+    let candidats = [];
+
+
+    /* =====================================================
+       ELEMENTS
+    ===================================================== */
+
+    const titre =
+        document.getElementById("titre");
+
+    const description =
+        document.getElementById("description");
+
+    const datedebut =
+        document.getElementById("datedebut");
+
+    const datefin =
+        document.getElementById("datefin");
+
+    const statut =
+        document.getElementById("statut");
+
+    const listeCandidats =
+        document.getElementById("listeCandidats");
+
+    const nombreCandidats =
+        document.getElementById("nombreCandidats");
+
+    const btnAjouterCandidat =
+        document.getElementById("btnAjouterCandidat");
+
+    const btnCreerVote =
+        document.getElementById("btnCreerVote");
+
+    const messageSucces =
+        document.getElementById("messageSucces");
+
+    const messageErreur =
+        document.getElementById("messageErreur");
+
+    const zoneLien =
+        document.getElementById("zoneLien");
+
+    const lienVote =
+        document.getElementById("lienVote");
+
+    const btnCopier =
+        document.getElementById("btnCopier");
+
+    const btnOuvrir =
+        document.getElementById("btnOuvrir");
+
+
+    /* =====================================================
+       AFFICHER LES CANDIDATS
+    ===================================================== */
+
+    function afficherCandidats() {
+
+        listeCandidats.innerHTML = "";
+
+
+        if (candidats.length === 0) {
+
+            const message =
+                document.createElement("div");
+
+            message.className =
+                "empty";
+
+            message.textContent =
+                "Aucun candidat ajouté pour le moment.";
+
+            listeCandidats.appendChild(
+                message
+            );
+        }
+
+
+        candidats.forEach(
+            function(candidat, index) {
+
+                const bloc =
+                    document.createElement("div");
+
+                bloc.className =
+                    "candidate";
+
+
+                /* TITRE */
+
+                const titreCandidat =
+                    document.createElement("div");
+
+                titreCandidat.className =
+                    "candidate-title";
+
+
+                const nomTitre =
+                    document.createElement("h3");
+
+                nomTitre.textContent =
+                    "Candidat " +
+                    (index + 1);
+
+
+                const boutonSupprimer =
+                    document.createElement("button");
+
+                boutonSupprimer.type =
+                    "button";
+
+                boutonSupprimer.className =
+                    "btn-danger";
+
+                boutonSupprimer.textContent =
+                    "Supprimer";
+
+
+                boutonSupprimer.addEventListener(
+                    "click",
+                    function() {
+
+                        candidats.splice(
+                            index,
+                            1
+                        );
+
+                        afficherCandidats();
+
+                    }
+                );
+
+
+                titreCandidat.appendChild(
+                    nomTitre
+                );
+
+                titreCandidat.appendChild(
+                    boutonSupprimer
+                );
+
+
+                bloc.appendChild(
+                    titreCandidat
+                );
+
+
+                /* NUMERO */
+
+                const labelNumero =
+                    document.createElement("label");
+
+                labelNumero.textContent =
+                    "Numéro";
+
+
+                const inputNumero =
+                    document.createElement("input");
+
+                inputNumero.type =
+                    "text";
+
+                inputNumero.value =
+                    candidat.numero;
+
+                inputNumero.placeholder =
+                    "Exemple : 01";
+
+
+                inputNumero.addEventListener(
+                    "input",
+                    function() {
+
+                        candidat.numero =
+                            inputNumero.value;
+
+                    }
+                );
+
+
+                bloc.appendChild(
+                    labelNumero
+                );
+
+                bloc.appendChild(
+                    inputNumero
+                );
+
+
+                /* NOM */
+
+                const labelNom =
+                    document.createElement("label");
+
+                labelNom.textContent =
+                    "Nom";
+
+
+                const inputNom =
+                    document.createElement("input");
+
+                inputNom.type =
+                    "text";
+
+                inputNom.value =
+                    candidat.nom;
+
+                inputNom.placeholder =
+                    "Nom du candidat";
+
+
+                inputNom.addEventListener(
+                    "input",
+                    function() {
+
+                        candidat.nom =
+                            inputNom.value;
+
+                    }
+                );
+
+
+                bloc.appendChild(
+                    labelNom
+                );
+
+                bloc.appendChild(
+                    inputNom
+                );
+
+
+                /* PRENOM */
+
+                const labelPrenom =
+                    document.createElement("label");
+
+                labelPrenom.textContent =
+                    "Prénom";
+
+
+                const inputPrenom =
+                    document.createElement("input");
+
+                inputPrenom.type =
+                    "text";
+
+                inputPrenom.value =
+                    candidat.prenom;
+
+                inputPrenom.placeholder =
+                    "Prénom du candidat";
+
+
+                inputPrenom.addEventListener(
+                    "input",
+                    function() {
+
+                        candidat.prenom =
+                            inputPrenom.value;
+
+                    }
+                );
+
+
+                bloc.appendChild(
+                    labelPrenom
+                );
+
+                bloc.appendChild(
+                    inputPrenom
+                );
+
+
+                /* PHOTO */
+
+                const labelPhoto =
+                    document.createElement("label");
+
+                labelPhoto.textContent =
+                    "Photo";
+
+
+                const inputPhoto =
+                    document.createElement("input");
+
+                inputPhoto.type =
+                    "file";
+
+                inputPhoto.accept =
+                    "image/*";
+
+
+                inputPhoto.addEventListener(
+                    "change",
+                    function() {
+
+                        if (
+                            inputPhoto.files &&
+                            inputPhoto.files.length > 0
+                        ) {
+
+                            candidat.photo =
+                                inputPhoto.files[0].name;
+
+                        } else {
+
+                            candidat.photo = "";
+
+                        }
+
+                        afficherCandidats();
+
+                    }
+                );
+
+
+                bloc.appendChild(
+                    labelPhoto
+                );
+
+                bloc.appendChild(
+                    inputPhoto
+                );
+
+
+                const photoInfo =
+                    document.createElement("div");
+
+                photoInfo.className =
+                    "photo-name";
+
+
+                if (candidat.photo) {
+
+                    photoInfo.textContent =
+                        "Photo sélectionnée : " +
+                        candidat.photo;
+
+                } else {
+
+                    photoInfo.textContent =
+                        "Aucune photo sélectionnée.";
+
+                }
+
+
+                bloc.appendChild(
+                    photoInfo
+                );
+
+
+                listeCandidats.appendChild(
+                    bloc
+                );
+
+            }
+        );
+
+
+        nombreCandidats.textContent =
+            candidats.length;
+
+    }
+
+
+    /* =====================================================
+       AJOUTER UN CANDIDAT
+    ===================================================== */
+
+    btnAjouterCandidat.addEventListener(
+        "click",
+        function() {
+
+            candidats.push({
+
+                numero:
+                    String(
+                        candidats.length + 1
+                    ).padStart(2, "0"),
+
+                nom: "",
+
+                prenom: "",
+
+                photo: ""
+
+            });
+
+
+            afficherCandidats();
+
+        }
+    );
+
+
+    /* =====================================================
+       CREER LE VOTE
+    ===================================================== */
+
+    btnCreerVote.addEventListener(
+        "click",
+        async function() {
+
+            messageSucces.style.display =
+                "none";
+
+            messageErreur.style.display =
+                "none";
+
+            zoneLien.style.display =
+                "none";
+
+
+            try {
+
+                /* VERIFICATION */
+
+                if (!titre.value.trim()) {
+
+                    throw new Error(
+                        "Veuillez saisir le titre du vote."
+                    );
+
+                }
+
+
+                if (!description.value.trim()) {
+
+                    throw new Error(
+                        "Veuillez saisir la description."
+                    );
+
+                }
+
+
+                if (!datedebut.value) {
+
+                    throw new Error(
+                        "Veuillez choisir la date de début."
+                    );
+
+                }
+
+
+                if (!datefin.value) {
+
+                    throw new Error(
+                        "Veuillez choisir la date de fin."
+                    );
+
+                }
+
+
+                if (candidats.length === 0) {
+
+                    throw new Error(
+                        "Veuillez ajouter au moins un candidat."
+                    );
+
+                }
+
+
+                /* SESSION */
+
+                utilisateur =
+                    await account.get();
+
+
+                /* ID UNIQUE */
+
+                const idvote =
+                    "vote-" +
+                    Date.now();
+
+
+                /* DONNEES */
+
+                const data = {
+
+                    titre:
+                        titre.value.trim(),
+
+                    description:
+                        description.value.trim(),
+
+                    datedebut:
+                        datedebut.value,
+
+                    datefin:
+                        datefin.value,
+
+                    statut:
+                        statut.value,
+
+                    idvote:
+                        idvote,
+
+                    candidats:
+                        JSON.stringify(candidats),
+
+                    createurId:
+                        utilisateur.$id
+
+                };
+
+
+                console.log(
+                    "ID DU VOTE :",
+                    idvote
+                );
+
+                console.log(
+                    "DONNEES ENVOYEES :",
+                    data
+                );
+
+
+                /* =================================================
+                   URL TABLESDB
+                ================================================= */
+
+                const url =
+                    ENDPOINT +
+                    "/tablesdb/" +
+                    DATABASE_ID +
+                    "/tables/" +
+                    TABLE_ID +
+                    "/rows";
+
+
+                console.log(
+                    "URL APPWRITE :",
+                    url
+                );
+
+
+                /* =================================================
+                   ENVOI A APPWRITE
+                ================================================= */
+
+                const response =
+                    await fetch(
+                        url,
+                        {
+                            method: "POST",
+
+                            credentials: "include",
+
+                            headers: {
+
+                                "Content-Type":
+                                    "application/json",
+
+                                "Accept":
+                                    "application/json",
+
+                                "X-Appwrite-Project":
+                                    PROJECT_ID
+
+                            },
+
+                            body:
+                                JSON.stringify({
+
+                                    rowId:
+                                        idvote,
+
+                                    data:
+                                        data
+
+                                })
+
+                        }
+                    );
+
+
+                /* REPONSE */
+
+                const resultat =
+                    await response.json();
+
+
+                console.log(
+                    "REPONSE APPWRITE :",
+                    resultat
+                );
+
+
+                /* ERREUR APPWRITE */
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        resultat.message ||
+                        resultat.error ||
+                        "Appwrite a refusé la création du vote."
+                    );
+
+                }
+
+
+                /* SUCCES */
+
+                const lien =
+                    window.location.origin +
+                    "/vote.html?id=" +
+                    encodeURIComponent(
+                        idvote
+                    );
+
+
+                lienVote.value =
+                    lien;
+
+
+                zoneLien.style.display =
+                    "block";
+
+
+                messageSucces.textContent =
+                    "Le vote a été créé avec succès ! ID : " +
+                    idvote;
+
+
+                messageSucces.style.display =
+                    "block";
+
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "ERREUR CREATION VOTE :",
+                    error
+                );
+
+
+                messageErreur.textContent =
+                    "Erreur : " +
+                    error.message;
+
+
+                messageErreur.style.display =
+                    "block";
+
+            }
+
+        }
+    );
+
+
+    /* =====================================================
+       COPIER LE LIEN
+    ===================================================== */
+
+    btnCopier.addEventListener(
+        "click",
+        async function() {
+
+            if (!lienVote.value) {
+                return;
+            }
+
+
+            try {
+
+                await navigator.clipboard.writeText(
+                    lienVote.value
+                );
+
+                alert(
+                    "Lien copié avec succès !"
+                );
+
+            }
+
+            catch (error) {
+
+                lienVote.select();
+
+                document.execCommand(
+                    "copy"
+                );
+
+                alert(
+                    "Lien copié avec succès !"
+                );
+
+            }
+
+        }
+    );
+
+
+    /* =====================================================
+       OUVRIR LE VOTE
+    ===================================================== */
+
+    btnOuvrir.addEventListener(
+        "click",
+        function() {
+
+            if (!lienVote.value) {
+                return;
+            }
+
+
+            window.open(
+                lienVote.value,
+                "_blank"
+            );
+
+        }
+    );
+
+
+    /* =====================================================
+       INITIALISATION
+    ===================================================== */
+
+    afficherCandidats();
+
+</script>
+
+</body>
+</html>

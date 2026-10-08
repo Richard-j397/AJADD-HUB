@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Administration - AJADD HUB</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@17.0.0"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            color: #222;
+        }
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        header {
+            background: #071a3d;
+            color: white;
+            padding: 20px;
+            position: relative;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo h1 {
+            color: #d4af37;
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .logo p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .admin-user {
+            text-align: right;
+        }
+
+        .admin-user span {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .btn-deconnexion {
+            background: #c62828;
+            color: white;
+            border: none;
+            padding: 9px 14px;
+            border-radius: 7px;
+            cursor: pointer;
+        }
+
+        .btn-deconnexion:hover {
+            background: #a91f1f;
+        }
+
+        /* =========================
+           CONTAINER
+        ========================= */
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .bienvenue {
+            margin-bottom: 25px;
+        }
+
+        .bienvenue h2 {
+            color: #071a3d;
+            margin-bottom: 7px;
+        }
+
+        .bienvenue p {
+            color: #666;
+        }
+
+        /* =========================
+           STATISTIQUES
+        ========================= */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 22px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+            border-top: 4px solid #d4af37;
+        }
+
+        .stat-card .icone {
+            font-size: 30px;
+            margin-bottom: 12px;
+        }
+
+        .stat-card h3 {
+            color: #071a3d;
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            color: #777;
+            font-size: 14px;
+        }
+
+        /* =========================
+           SECTION
+        ========================= */
+
+        .section {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+            margin-bottom: 25px;
+        }
+
+        .section h2 {
+            color: #071a3d;
+            margin-bottom: 20px;
+        }
+
+        /* =========================
+           MODULES
+        ========================= */
+
+        .modules {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .module {
+            border: 1px solid #e1e1e1;
+            border-radius: 10px;
+            padding: 20px;
+            transition: 0.2s;
+        }
+
+        .module:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .module .module-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .module h3 {
+            color: #071a3d;
+            margin-bottom: 8px;
+        }
+
+        .module p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .btn-module {
+            display: inline-block;
+            text-decoration: none;
+            background: #071a3d;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 7px;
+            font-size: 14px;
+        }
+
+        .btn-module:hover {
+            background: #102d63;
+        }
+
+        /* =========================
+           ACTIVITE RAPIDE
+        ========================= */
+
+        .actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .action {
+            text-decoration: none;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            padding: 18px;
+            border-radius: 9px;
+            text-align: center;
+            color: #071a3d;
+            font-weight: bold;
+        }
+
+        .action:hover {
+            background: #fff8e1;
+            border-color: #d4af37;
+        }
+
+        .action-icon {
+            font-size: 25px;
+            margin-bottom: 8px;
+        }
+
+        /* =========================
+           MESSAGE
+        ========================= */
+
+        .message {
+            display: none;
+            padding: 13px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .success {
+            background: #e8f5e9;
+            color: #1b5e20;
+        }
+
+        .error {
+            background: #ffebee;
+            color: #b71c1c;
+        }
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        footer {
+            background: #071a3d;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+        }
+
+        footer strong {
+            color: #d4af37;
+        }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 900px) {
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .modules {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .actions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            header {
+                padding: 15px;
+            }
+
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .admin-user {
+                text-align: left;
+            }
+
+            .container {
+                padding: 0 12px;
+                margin-top: 20px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+
+            .stat-card {
+                padding: 15px;
+            }
+
+            .stat-card h3 {
+                font-size: 24px;
+            }
+
+            .modules {
+                grid-template-columns: 1fr;
+            }
+
+            .actions {
+                grid-template-columns: 1fr;
+            }
+
+            .section {
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- =========================
+     HEADER
+========================= -->
+
+<header>
+
+    <div class="header-content">
+
+        <div class="logo">
+            <h1>AJADD HUB</h1>
+            <p>Administration générale</p>
+        </div>
+
+        <div class="admin-user">
+
+            <span>
+                Administrateur :
+                <strong id="nomAdministrateur">
+                    Chargement...
+                </strong>
+            </span>
+
+            <button
+                class="btn-deconnexion"
+                onclick="deconnexion()"
+            >
+                Déconnexion
+            </button>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<!-- =========================
+     CONTENU
+========================= -->
+
+<div class="container">
+
+    <div
+        id="message"
+        class="message"
+    ></div>
+
+
+    <!-- BIENVENUE -->
+
+    <div class="bienvenue">
+
+        <h2>
+            Tableau de bord
+        </h2>
+
+        <p>
+            Gérez les votes, inscriptions, candidatures,
+            utilisateurs, tickets et événements de AJADD HUB.
+        </p>
+
+    </div>
+
+
+    <!-- =========================
+         STATISTIQUES
+    ========================= -->
+
+    <div class="stats">
+
+        <div class="stat-card">
+
+            <div class="icone">
+                👥
+            </div>
+
+            <h3 id="statUtilisateurs">
+                0
+            </h3>
+
+            <p>
+                Utilisateurs
+            </p>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="icone">
+                🗳️
+            </div>
+
+            <h3 id="statVotes">
+                0
+            </h3>
+
+            <p>
+                Votes
+            </p>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="icone">
+                📝
+            </div>
+
+            <h3 id="statInscriptions">
+                0
+            </h3>
+
+            <p>
+                Inscriptions
+            </p>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="icone">
+                🎫
+            </div>
+
+            <h3 id="statTickets">
+                0
+            </h3>
+
+            <p>
+                Tickets vendus
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         MODULES ADMIN
+    ========================= -->
+
+    <div class="section">
+
+        <h2>
+            Gestion de la plateforme
+        </h2>
+
+        <div class="modules">
+
+
+            <!-- VOTES -->
+
+            <div class="module">
+
+                <div class="module-icon">
+                    🗳️
+                </div>
+
+                <h3>
+                    Votes
+                </h3>
+
+                <p>
+                    Créez et gérez les votes,
+                    les candidats et les liens de vote.
+                </p>
+
+                <a
+                    href="admin-vote.html"
+                    class="btn-module"
+                >
+                    Gérer les votes
+                </a>
+
+            </div>
+
+
+            <!-- INSCRIPTIONS -->
+
+            <div class="module">
+
+                <div class="module-icon">
+                    📝
+                </div>
+
+                <h3>
+                    Inscriptions
+                </h3>
+
+                <p>
+                    Créez des campagnes d'inscription
+                    et consultez les personnes inscrites.
+                </p>
+
+                <a
+                    href="admin-inscription.html"
+                    class="btn-module"
+                >
+                    Gérer les inscriptions
+                </a>
+
+            </div>
+
+
+            <!-- CANDIDATURES -->
+
+            <div class="module">
+
+                <div class="module-icon">
+                    📋
+                </div>
+
+                <h3>
+                    Candidatures
+                </h3>
+
+                <p>
+                    Gérez les appels à candidature
+                    et les dossiers reçus.
+                </p>
+
+                <a
+                    href="admin-candidature.html"
+                    class="btn-module"
+                >
+                    Gérer les candidatures
+                </a>
+
+            </div>
+
+
+            <!-- UTILISATEURS -->
+
+            <div class="module">
+
+                <div class="module-icon">
+                    👥
+                </div>
+
+                <h3>
+                    Utilisateurs
+                </h3>
+
+                <p>
+                    Consultez et gérez les comptes
+                    des utilisateurs de AJADD HUB.
+                </p>
+
+                <a
+                    href="#"
+                    class="btn-module"
+                    onclick="moduleBientotDisponible(event, 'Gestion des utilisateurs')"
+                >
+                    Gérer les utilisateurs
+                </a>
+
+            </div>
+
+
+            <!-- TICKETS -->
+
+            <div class="module">
+
+                <div class="module-icon">
+                    🎫
+                </div>
+
+                <h3>
+                    Tickets
+                </h3>
+
+                <p>
+                    Gérez les événements, les tickets,
+                    les prix et les ventes.
+                </p>
+
+                <a
+                    href="tickets.html"
+                    class="btn-module"
+                >
+                    Gérer les tickets
+                </a>
+
+            </div>
+
+
+            <!-- EVENEMENTS -->
+
+            <div class="module">
+
+                <div class="module-icon">
+                    🎉
+                </div>
+
+                <h3>
+                    Événements
+                </h3>
+
+                <p>
+                    Créez et gérez les événements
+                    organisés par AJADD.
+                </p>
+
+                <a
+                    href="#"
+                    class="btn-module"
+                    onclick="moduleBientotDisponible(event, 'Gestion des événements')"
+                >
+                    Gérer les événements
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         ACCÈS RAPIDE
+    ========================= -->
+
+    <div class="section">
+
+        <h2>
+            Accès rapide
+        </h2>
+
+        <div class="actions">
+
+            <a
+                href="admin-vote.html"
+                class="action"
+            >
+                <div class="action-icon">
+                    🗳️
+                </div>
+                Nouveau vote
+            </a>
+
+
+            <a
+                href="admin-inscription.html"
+                class="action"
+            >
+                <div class="action-icon">
+                    📝
+                </div>
+                Nouvelle inscription
+            </a>
+
+
+            <a
+                href="admin-candidature.html"
+                class="action"
+            >
+                <div class="action-icon">
+                    📋
+                </div>
+                Nouvelle candidature
+            </a>
+
+
+            <a
+                href="dashboard.html"
+                class="action"
+            >
+                <div class="action-icon">
+                    👤
+                </div>
+                Mon compte
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         ETAT DE LA PLATEFORME
+    ========================= -->
+
+    <div class="section">
+
+        <h2>
+            État de la plateforme
+        </h2>
+
+        <p style="margin-bottom:10px;">
+            🟢
+            <strong>
+                Connexion administrateur :
+            </strong>
+            Active
+        </p>
+
+        <p style="margin-bottom:10px;">
+            🔵
+            <strong>
+                Plateforme :
+            </strong>
+            AJADD HUB
+        </p>
+
+        <p>
+            🟡
+            <strong>
+                Base de données :
+            </strong>
+            Connexion à finaliser
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     FOOTER
+========================= -->
+
+<footer>
+
+    <p>
+        <strong>AJADD HUB</strong>
+        — Administration
+    </p>
+
+    <p style="margin-top:7px; font-size:13px;">
+        AJADD International
+    </p>
+
+</footer>
+
+
+<script>
+
+    /* =========================
+       APPWRITE
+    ========================= */
+
+    const client =
+        new Appwrite.Client();
+
+    client
+        .setEndpoint(
+            "https://cloud.appwrite.io/v1"
+        )
+        .setProject(
+            "6ac62abb001c74bb8de5"
+        );
+
+
+    const account =
+        new Appwrite.Account(client);
+
+
+    /* =========================
+       VERIFIER CONNEXION
+    ========================= */
+
+    async function verifierConnexion() {
+
+        try {
+
+            const utilisateur =
+                await account.get();
+
+            console.log(
+                "ADMIN CONNECTÉ :",
+                utilisateur
+            );
+
+
+            document
+                .getElementById(
+                    "nomAdministrateur"
+                )
+                .textContent =
+                utilisateur.name ||
+                utilisateur.email;
+
+
+        } catch (error) {
+
+            console.error(
+                "ADMIN NON CONNECTÉ :",
+                error
+            );
+
+            window.location.href =
+                "Connexion.html";
+
+        }
+
+    }
+
+
+    /* =========================
+       DECONNEXION
+    ========================= */
+
+    async function deconnexion() {
+
+        const message =
+            document.getElementById(
+                "message"
+            );
+
+
+        try {
+
+            await account.deleteSession(
+                "current"
+            );
+
+
+            message.style.display =
+                "block";
+
+            message.className =
+                "message success";
+
+            message.textContent =
+                "Déconnexion réussie !";
+
+
+            setTimeout(function() {
+
+                window.location.href =
+                    "Connexion.html";
+
+            }, 800);
+
+
+        } catch (error) {
+
+            console.error(
+                "ERREUR DÉCONNEXION :",
+                error
+            );
+
+
+            message.style.display =
+                "block";
+
+            message.className =
+                "message error";
+
+            message.textContent =
+                "Erreur : " +
+                error.message;
+
+        }
+
+    }
+
+
+    /* =========================
+       MODULE PAS ENCORE DISPONIBLE
+    ========================= */
+
+    function moduleBientotDisponible(
+        event,
+        nomModule
+    ) {
+
+        event.preventDefault();
+
+
+        const message =
+            document.getElementById(
+                "message"
+            );
+
+
+        message.style.display =
+            "block";
+
+        message.className =
+            "message success";
+
+        message.textContent =
+            nomModule +
+            " sera activé lorsque son interface Admin sera terminée.";
+
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+    }
+
+
+    /* =========================
+       INITIALISATION
+    ========================= */
+
+    verifierConnexion();
+
+</script>
+
+</body>
+</html>

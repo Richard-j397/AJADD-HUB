@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AJADD HUB - Paramètres</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#f5f7fb;
+    color:#1f2937;
+}
+
+header{
+    background:#0b1f3a;
+    color:white;
+    padding:20px;
+}
+
+header h1{
+    margin:0 0 5px;
+}
+
+.container{
+    max-width:1000px;
+    margin:25px auto;
+    padding:0 15px;
+}
+
+.message{
+    padding:14px;
+    border-radius:8px;
+    margin-bottom:20px;
+    display:none;
+}
+
+.success{
+    display:block;
+    background:#dcfce7;
+    color:#166534;
+}
+
+.warning{
+    display:block;
+    background:#fef3c7;
+    color:#92400e;
+}
+
+.section{
+    background:white;
+    padding:22px;
+    margin-bottom:20px;
+    border-radius:12px;
+    box-shadow:0 3px 12px rgba(0,0,0,.08);
+}
+
+.section h2{
+    margin-top:0;
+    color:#0b1f3a;
+}
+
+.field{
+    margin-bottom:18px;
+}
+
+label{
+    display:block;
+    font-weight:bold;
+    margin-bottom:7px;
+}
+
+input,
+select,
+textarea{
+    width:100%;
+    padding:12px;
+    border:1px solid #d1d5db;
+    border-radius:8px;
+    font-size:15px;
+}
+
+textarea{
+    min-height:100px;
+    resize:vertical;
+}
+
+.row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+}
+
+.actions{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+button{
+    border:0;
+    padding:12px 18px;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.btn{
+    background:#0b1f3a;
+    color:white;
+}
+
+.btn.gold{
+    background:#c9a227;
+}
+
+.btn.gray{
+    background:#6b7280;
+    color:white;
+}
+
+.danger{
+    border:1px solid #fecaca;
+    background:#fff1f2;
+}
+
+.danger h2{
+    color:#b91c1c;
+}
+
+small{
+    color:#6b7280;
+}
+
+@media(max-width:700px){
+
+    .row{
+        grid-template-columns:1fr;
+    }
+
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+    <h1>AJADD HUB</h1>
+
+    <div>
+        Paramètres de la plateforme
+    </div>
+
+</header>
+
+
+<div class="container">
+
+    <div
+        id="message"
+        class="message"
+    ></div>
+
+
+    <!-- ================================
+         INFORMATIONS GÉNÉRALES
+    ================================= -->
+
+    <div class="section">
+
+        <h2>Informations générales</h2>
+
+        <div class="field">
+
+            <label for="nomPlateforme">
+                Nom de la plateforme
+            </label>
+
+            <input
+                id="nomPlateforme"
+                type="text"
+                value="AJADD HUB"
+            >
+
+        </div>
+
+
+        <div class="field">
+
+            <label for="organisation">
+                Organisation
+            </label>
+
+            <input
+                id="organisation"
+                type="text"
+                value="AJADD TOGO"
+            >
+
+        </div>
+
+
+        <div class="field">
+
+            <label for="email">
+                Adresse e-mail
+            </label>
+
+            <input
+                id="email"
+                type="email"
+                value="ajaddtogo2@gmail.com"
+            >
+
+        </div>
+
+
+        <div class="field">
+
+            <label for="telephone">
+                Téléphone
+            </label>
+
+            <input
+                id="telephone"
+                type="text"
+                value="+228 93 84 92 29"
+            >
+
+        </div>
+
+
+        <div class="field">
+
+            <label for="description">
+                Description
+            </label>
+
+            <textarea id="description">Plateforme officielle AJADD HUB pour les inscriptions, votes, événements, paiements, billets et communications.</textarea>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================
+         APPARENCE
+    ================================= -->
+
+    <div class="section">
+
+        <h2>Apparence</h2>
+
+        <div class="row">
+
+            <div class="field">
+
+                <label for="couleurPrincipale">
+                    Couleur principale
+                </label>
+
+                <input
+                    id="couleurPrincipale"
+                    type="color"
+                    value="#0b1f3a"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="couleurSecondaire">
+                    Couleur secondaire
+                </label>
+
+                <input
+                    id="couleurSecondaire"
+                    type="color"
+                    value="#c9a227"
+                >
+
+            </div>
+
+        </div>
+
+
+        <div class="field">
+
+            <label for="mode">
+
+                Mode d'affichage
+
+            </label>
+
+            <select id="mode">
+
+                <option value="clair">
+                    Clair
+                </option>
+
+                <option value="sombre">
+                    Sombre
+                </option>
+
+            </select>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================
+         OPTIONS
+    ================================= -->
+
+    <div class="section">
+
+        <h2>Options de la plateforme</h2>
+
+        <div class="field">
+
+            <label>
+
+                <input
+                    id="notifications"
+                    type="checkbox"
+                    style="width:auto"
+                    checked
+                >
+
+                Activer les notifications
+
+            </label>
+
+        </div>
+
+
+        <div class="field">
+
+            <label>
+
+                <input
+                    id="inscriptions"
+                    type="checkbox"
+                    style="width:auto"
+                    checked
+                >
+
+                Autoriser les inscriptions
+
+            </label>
+
+        </div>
+
+
+        <div class="field">
+
+            <label>
+
+                <input
+                    id="votes"
+                    type="checkbox"
+                    style="width:auto"
+                    checked
+                >
+
+                Autoriser les votes
+
+            </label>
+
+        </div>
+
+
+        <div class="field">
+
+            <label>
+
+                <input
+                    id="paiements"
+                    type="checkbox"
+                    style="width:auto"
+                    checked
+                >
+
+                Activer les paiements
+
+            </label>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================
+         ACTIONS
+    ================================= -->
+
+    <div class="section">
+
+        <h2>Enregistrer</h2>
+
+        <div class="actions">
+
+            <button
+                class="btn"
+                onclick="sauvegarder()"
+            >
+                Enregistrer les paramètres
+            </button>
+
+
+            <button
+                class="btn gray"
+                onclick="chargerParametres()"
+            >
+                Réinitialiser
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================
+         ZONE DANGEREUSE
+    ================================= -->
+
+    <div class="section danger">
+
+        <h2>Zone dangereuse</h2>
+
+        <p>
+            Cette action efface les paramètres
+            enregistrés sur cet appareil.
+        </p>
+
+        <button
+            class="btn gray"
+            onclick="effacerParametres()"
+        >
+            Effacer les paramètres locaux
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================================
+   CLÉ DE STOCKAGE
+========================================= */
+
+const STORAGE_KEY =
+    "ajaddHubParametres";
+
+
+/* =========================================
+   MESSAGE
+========================================= */
+
+function afficherMessage(
+    texte,
+    type="success"
+){
+
+    const message =
+        document.getElementById(
+            "message"
+        );
+
+    message.className =
+        "message " + type;
+
+    message.textContent =
+        texte;
+
+
+    setTimeout(
+        function(){
+
+            message.className =
+                "message";
+
+        },
+        3000
+    );
+
+}
+
+
+/* =========================================
+   RÉCUPÉRER LES PARAMÈTRES
+========================================= */
+
+function recupererParametres(){
+
+    return {
+
+        nomPlateforme:
+            document.getElementById(
+                "nomPlateforme"
+            ).value,
+
+        organisation:
+            document.getElementById(
+                "organisation"
+            ).value,
+
+        email:
+            document.getElementById(
+                "email"
+            ).value,
+
+        telephone:
+            document.getElementById(
+                "telephone"
+            ).value,
+
+        description:
+            document.getElementById(
+                "description"
+            ).value,
+
+        couleurPrincipale:
+            document.getElementById(
+                "couleurPrincipale"
+            ).value,
+
+        couleurSecondaire:
+            document.getElementById(
+                "couleurSecondaire"
+            ).value,
+
+        mode:
+            document.getElementById(
+                "mode"
+            ).value,
+
+        notifications:
+            document.getElementById(
+                "notifications"
+            ).checked,
+
+        inscriptions:
+            document.getElementById(
+                "inscriptions"
+            ).checked,
+
+        votes:
+            document.getElementById(
+                "votes"
+            ).checked,
+
+        paiements:
+            document.getElementById(
+                "paiements"
+            ).checked
+
+    };
+
+}
+
+
+/* =========================================
+   SAUVEGARDER
+========================================= */
+
+function sauvegarder(){
+
+    const parametres =
+        recupererParametres();
+
+
+    localStorage.setItem(
+
+        STORAGE_KEY,
+
+        JSON.stringify(
+            parametres
+        )
+
+    );
+
+
+    appliquerParametres();
+
+
+    afficherMessage(
+        "Paramètres enregistrés avec succès.",
+        "success"
+    );
+
+}
+
+
+/* =========================================
+   CHARGER
+========================================= */
+
+function chargerParametres(){
+
+    const sauvegarde =
+        localStorage.getItem(
+            STORAGE_KEY
+        );
+
+
+    if(!sauvegarde){
+
+        afficherMessage(
+            "Aucun paramètre enregistré.",
+            "warning"
+        );
+
+        return;
+
+    }
+
+
+    try{
+
+        const p =
+            JSON.parse(
+                sauvegarde
+            );
+
+
+        document.getElementById(
+            "nomPlateforme"
+        ).value =
+            p.nomPlateforme || "AJADD HUB";
+
+
+        document.getElementById(
+            "organisation"
+        ).value =
+            p.organisation || "AJADD TOGO";
+
+
+        document.getElementById(
+            "email"
+        ).value =
+            p.email || "ajaddtogo2@gmail.com";
+
+
+        document.getElementById(
+            "telephone"
+        ).value =
+            p.telephone || "+228 93 84 92 29";
+
+
+        document.getElementById(
+            "description"
+        ).value =
+            p.description || "";
+
+
+        document.getElementById(
+            "couleurPrincipale"
+        ).value =
+            p.couleurPrincipale || "#0b1f3a";
+
+
+        document.getElementById(
+            "couleurSecondaire"
+        ).value =
+            p.couleurSecondaire || "#c9a227";
+
+
+        document.getElementById(
+            "mode"
+        ).value =
+            p.mode || "clair";
+
+
+        document.getElementById(
+            "notifications"
+        ).checked =
+            p.notifications !== false;
+
+
+        document.getElementById(
+            "inscriptions"
+        ).checked =
+            p.inscriptions !== false;
+
+
+        document.getElementById(
+            "votes"
+        ).checked =
+            p.votes !== false;
+
+
+        document.getElementById(
+            "paiements"
+        ).checked =
+            p.paiements !== false;
+
+
+        appliquerParametres();
+
+
+        afficherMessage(
+            "Paramètres chargés.",
+            "success"
+        );
+
+
+    }catch(error){
+
+        console.error(error);
+
+        afficherMessage(
+            "Impossible de charger les paramètres.",
+            "warning"
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   APPLIQUER
+========================================= */
+
+function appliquerParametres(){
+
+    const p =
+        recupererParametres();
+
+
+    document.documentElement.style
+        .setProperty(
+            "--couleur-principale",
+            p.couleurPrincipale
+        );
+
+
+    document.documentElement.style
+        .setProperty(
+            "--couleur-secondaire",
+            p.couleurSecondaire
+        );
+
+
+    if(p.mode === "sombre"){
+
+        document.body.style.background =
+            "#111827";
+
+        document.body.style.color =
+            "#f9fafb";
+
+    }else{
+
+        document.body.style.background =
+            "#f5f7fb";
+
+        document.body.style.color =
+            "#1f2937";
+
+    }
+
+}
+
+
+/* =========================================
+   EFFACER
+========================================= */
+
+function effacerParametres(){
+
+    const confirmation =
+        confirm(
+            "Voulez-vous vraiment effacer les paramètres enregistrés sur cet appareil ?"
+        );
+
+
+    if(!confirmation){
+
+        return;
+
+    }
+
+
+    localStorage.removeItem(
+        STORAGE_KEY
+    );
+
+
+    location.reload();
+
+}
+
+
+/* =========================================
+   DÉMARRAGE
+========================================= */
+
+chargerParametres();
+
+</script>
+
+<script src="admin-guard.js"></script>
+</body>
+</html>

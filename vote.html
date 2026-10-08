@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Vote — AJADD HUB</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f7f7f7;
+            color: #222;
+        }
+
+        header {
+            background: #111;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            color: #d4af37;
+            margin-bottom: 5px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin: 30px auto;
+        }
+
+        .intro {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+        }
+
+        .intro h2 {
+            color: #111;
+            margin-bottom: 10px;
+        }
+
+        .intro p {
+            margin: 8px 0;
+            color: #555;
+        }
+
+        .statut {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            background: #dff6e5;
+            color: #16803c;
+            font-weight: bold;
+        }
+
+        #message {
+            display: none;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .message-success {
+            display: block !important;
+            background: #dff6e5;
+            color: #16803c;
+        }
+
+        .message-error {
+            display: block !important;
+            background: #ffe1e1;
+            color: #c62828;
+        }
+
+        .candidats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .candidat {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .photo {
+            width: 120px;
+            height: 120px;
+            margin: auto;
+            border-radius: 50%;
+            background: #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 45px;
+            margin-bottom: 15px;
+        }
+
+        .candidat h3 {
+            margin-bottom: 15px;
+        }
+
+        .btn-voter {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #d4af37;
+            color: #111;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-voter:hover {
+            background: #b89525;
+        }
+
+        .btn-voter:disabled {
+            background: #999;
+            color: white;
+            cursor: not-allowed;
+        }
+
+        footer {
+            margin-top: 40px;
+            background: #111;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>AJADD HUB</h1>
+    <p>Plateforme officielle AJADD TOGO</p>
+</header>
+
+<div class="container">
+
+    <div class="intro">
+        <h2>Miss Forme Divine 2027</h2>
+
+        <p>
+            Soutenez votre candidate préférée en participant
+            au vote officiel.
+        </p>
+
+        <p>
+            <strong>Fin du vote :</strong> 26 décembre 2026
+        </p>
+
+        <span class="statut">VOTE OUVERT</span>
+    </div>
+
+    <div id="message"></div>
+
+    <div class="candidats">
+
+        <!-- CANDIDAT 1 -->
+        <div class="candidat">
+            <div class="photo">👩</div>
+
+            <h3>Candidate exemple 1</h3>
+
+            <button
+                class="btn-voter"
+                onclick="enregistrerVote('Candidate exemple 1')">
+                VOTER
+            </button>
+        </div>
+
+
+        <!-- CANDIDAT 2 -->
+        <div class="candidat">
+            <div class="photo">👩</div>
+
+            <h3>Candidate exemple 2</h3>
+
+            <button
+                class="btn-voter"
+                onclick="enregistrerVote('Candidate exemple 2')">
+                VOTER
+            </button>
+        </div>
+
+
+        <!-- CANDIDAT 3 -->
+        <div class="candidat">
+            <div class="photo">👩</div>
+
+            <h3>Candidate exemple 3</h3>
+
+            <button
+                class="btn-voter"
+                onclick="enregistrerVote('Candidate exemple 3')">
+                VOTER
+            </button>
+        </div>
+
+    </div>
+
+</div>
+
+<footer>
+    AJADD HUB — AJADD TOGO
+</footer>
+
+
+<script>
+
+const PROJECT_ID = "6ac62abb001c74bb8de5";
+
+const DATABASE_ID = "6ac62bca002f025e7f1b";
+
+const TABLE_ID = "6ac75780002c0a5f175b";
+
+const VOTE_ID = "miss-forme-divine-2027";
+
+
+const BASE_URL =
+    "https://cloud.appwrite.io/v1/tablesdb/" +
+    DATABASE_ID +
+    "/tables/" +
+    TABLE_ID +
+    "/rows";
+
+
+
+/* ================================
+   MESSAGE
+================================ */
+
+function afficherMessage(texte, type) {
+
+    const message = document.getElementById("message");
+
+    message.textContent = texte;
+
+    message.className = "";
+
+    if (type === "success") {
+        message.classList.add("message-success");
+    }
+
+    if (type === "error") {
+        message.classList.add("message-error");
+    }
+}
+
+
+
+/* ================================
+   UTILISATEUR CONNECTÉ
+================================ */
+
+async function obtenirUtilisateur() {
+
+    const response = await fetch(
+        "https://cloud.appwrite.io/v1/account",
+        {
+            method: "GET",
+
+            credentials: "include",
+
+            headers: {
+                "Accept": "application/json",
+                "X-Appwrite-Project": PROJECT_ID
+            }
+        }
+    );
+
+    if (!response.ok) {
+        return null;
+    }
+
+    return await response.json();
+}
+
+
+
+/* ================================
+   VÉRIFIER SI L'UTILISATEUR A DÉJÀ VOTÉ
+================================ */
+
+async function verifierVoteDejaEffectue(userId) {
+
+    const response = await fetch(BASE_URL, {
+
+        method: "GET",
+
+        credentials: "include",
+
+        headers: {
+            "Accept": "application/json",
+            "X-Appwrite-Project": PROJECT_ID
+        }
+
+    });
+
+
+    if (!response.ok) {
+
+        console.error(
+            "Erreur lors de la vérification du vote"
+        );
+
+        return false;
+    }
+
+
+    const resultat = await response.json();
+
+
+    const lignes = resultat.rows || [];
+
+
+    return lignes.some(row =>
+
+        row.userId === userId &&
+
+        row.voteId === VOTE_ID &&
+
+        row.statut === "valide"
+
+    );
+}
+
+
+
+/* ================================
+   ENREGISTRER LE VOTE
+================================ */
+
+async function enregistrerVote(candidat) {
+
+    console.log(
+        "Candidat sélectionné :",
+        candidat
+    );
+
+
+    /* Vérifier la connexion */
+
+    const utilisateur =
+        await obtenirUtilisateur();
+
+
+    if (!utilisateur) {
+
+        localStorage.setItem(
+            "candidateSelectionnee",
+            candidat
+        );
+
+        window.location.href =
+            "Connexion.html";
+
+        return;
+    }
+
+
+    /* Désactiver les boutons */
+
+    const boutons =
+        document.querySelectorAll(".btn-voter");
+
+    boutons.forEach(button => {
+
+        button.disabled = true;
+
+    });
+
+
+    afficherMessage(
+        "Enregistrement de votre vote...",
+        "success"
+    );
+
+
+    try {
+
+        /* Vérifier doublon */
+
+        const dejaVote =
+            await verifierVoteDejaEffectue(
+                utilisateur.$id
+            );
+
+
+        if (dejaVote) {
+
+            afficherMessage(
+                "Vous avez déjà voté pour ce scrutin.",
+                "error"
+            );
+
+            boutons.forEach(button => {
+
+                button.disabled = true;
+
+            });
+
+            return;
+        }
+
+
+        /* Préparer les données */
+
+        const donnees = {
+
+            voteId: VOTE_ID,
+
+            candidat: candidat,
+
+            userId: utilisateur.$id,
+
+            dateVote:
+                new Date().toISOString(),
+
+            statut: "valide"
+
+        };
+
+
+        console.log(
+            "Données envoyées à Appwrite :",
+            donnees
+        );
+
+
+        /* Envoyer à Appwrite */
+
+        const response =
+            await fetch(BASE_URL, {
+
+                method: "POST",
+
+                credentials: "include",
+
+                headers: {
+
+                    "Content-Type":
+                        "application/json",
+
+                    "Accept":
+                        "application/json",
+
+                    "X-Appwrite-Project":
+                        PROJECT_ID
+
+                },
+
+                body: JSON.stringify({
+
+                    rowId:
+                        "bulletin-" +
+                        Date.now(),
+
+                    data: donnees
+
+                })
+
+            });
+
+
+        const resultat =
+            await response.json();
+
+
+        console.log(
+            "Réponse Appwrite :",
+            resultat
+        );
+
+
+        if (!response.ok) {
+
+            console.error(
+                "Erreur Appwrite :",
+                resultat
+            );
+
+            throw new Error(
+                resultat.message ||
+                "Impossible d'enregistrer le vote."
+            );
+        }
+
+
+        /* Succès */
+
+        afficherMessage(
+
+            "✓ Votre vote pour " +
+            candidat +
+            " a été enregistré avec succès.",
+
+            "success"
+
+        );
+
+
+        localStorage.removeItem(
+            "candidateSelectionnee"
+        );
+
+
+        setTimeout(() => {
+
+            window.location.href =
+                "confirmation-vote.html";
+
+        }, 1800);
+
+
+    } catch (error) {
+
+        console.error(
+            "Erreur complète :",
+            error
+        );
+
+
+        afficherMessage(
+
+            "Erreur : " +
+            error.message,
+
+            "error"
+
+        );
+
+
+        boutons.forEach(button => {
+
+            button.disabled = false;
+
+        });
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
